@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
+import io from 'socket.io-client';
 import styles from '../../styles/Home.module.css';
 import KPI from '../common/components/KPI';
 import { H1 } from '../common/styledComponents/Head';
@@ -33,16 +34,39 @@ export default function Example() {
     setTimeout(() => {
       const randomOperator = Math.random() < 0.5 ? '-' : '+';
       setRandomRumber(`${randomOperator}${(Math.random() * 10).toFixed(1)}`);
-      setRandomValue(((Math.random() * 13) * 12.2).toFixed(2));
+      setRandomValue((Math.random() * 13 * 12.2).toFixed(2));
       setRandomLabel(randomLabels[Math.floor(Math.random() * 4)]);
     }, 3500);
     setTimeout(() => {
       const randomOperator = Math.random() < 0.5 ? '-' : '+';
       setRandomRumber2(`${randomOperator}${(Math.random() * 10).toFixed(1)}`);
-      setRandomValue2(((Math.random() * 12) * 32.2).toFixed(2));
+      setRandomValue2((Math.random() * 12 * 32.2).toFixed(2));
       setRandomLabel2(randomLabels[Math.floor(Math.random() * 4)]);
     }, 4500);
   }, [randomRumber]);
+
+  useEffect(() => {
+    fetch('/api/socketio').finally(() => {
+      const socket = io();
+
+      socket.on('connect', () => {
+        console.log('connect');
+        socket.emit('hello');
+      });
+
+      socket.on('hello', (data) => {
+        console.log('hello', data);
+      });
+
+      socket.on('a user connected', () => {
+        console.log('a user connected');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('disconnect');
+      });
+    });
+  }, []); // Will be executed only once, when component is mounted
 
   return (
     <main className={styles.main}>
@@ -50,8 +74,21 @@ export default function Example() {
         {t('common:heading')}
       </H1>
 
-      <Box display="grid" mt="40px" width="100%" padding={{ base: '0 4vw', md: '0 8vw' }} gridTemplateColumns="repeat(auto-fill, minmax(15rem, 1fr))" gridGap="10px">
-        <KPI label={randomLabel} unit="$" value={randomValue} variation={randomRumber} changeWithColor />
+      <Box
+        display="grid"
+        mt="40px"
+        width="100%"
+        padding={{ base: '0 4vw', md: '0 8vw' }}
+        gridTemplateColumns="repeat(auto-fill, minmax(15rem, 1fr))"
+        gridGap="10px"
+      >
+        <KPI
+          label={randomLabel}
+          unit="$"
+          value={randomValue}
+          variation={randomRumber}
+          changeWithColor
+        />
         <KPI label="student rating" icon="smile" value={8.5} max={10} />
         <KPI label="Total monthly income" unit="$" value={2000} variation="+3.7" />
         <KPI label="Mentor late arrivals" icon="running" variation="2" value={2} max={10} />
@@ -59,7 +96,6 @@ export default function Example() {
         <KPI label="Overtime" icon="chronometer" value={3} max={10} variation="-4" />
         <KPI label="The student didn't arrive" icon="ghost" value={0} max={10} variation="0" />
       </Box>
-
     </main>
   );
 }
