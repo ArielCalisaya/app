@@ -18,15 +18,17 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import io from 'socket.io-client';
 import bc from '../services/breathecode';
 import axios from '../../axios';
 import Icon from './Icon';
 import Text from './Text';
 import AvatarUser from '../../js_modules/cohortSidebar/avatarUser';
 import { AvatarSkeleton } from './Skeleton';
+import { usePersistent } from '../hooks/usePersistent';
 
 const ProfilesSection = ({
-  title, paginationProps, setAlumniGeeksList, profiles,
+  title, paginationProps, setAlumniGeeksList, profiles, usersConnected,
 }) => {
   const { t } = useTranslation('dashboard');
   const [showMoreStudents, setShowMoreStudents] = useState(false);
@@ -48,8 +50,10 @@ const ProfilesSection = ({
         {
           studentsToShow?.map((c) => {
             const fullName = `${c.user.first_name} ${c.user.last_name}`;
+            const isConnected = usersConnected.some((id) => c.user.id === id);
+            console.log(fullName, 'id:', c.user.id, isConnected);
             return (
-              <AvatarUser key={`${c.id} - ${c.user.first_name}`} fullName={fullName} data={c} />
+              <AvatarUser key={`${c.id} - ${c.user.first_name}`} isConnected={isConnected} fullName={fullName} data={c} />
             );
           })
         }
@@ -137,6 +141,8 @@ const CohortSideBar = ({
   const [alumniGeeksList, setAlumniGeeksList] = useState({});
   const [activeStudentsLoading, setActiveStudentsLoading] = useState(true);
   const [graduatedStudentsLoading, setGraduatedStudentsLoading] = useState(true);
+  const [profile] = usePersistent('profile', {});
+  const [usersConnected, setUsersConnected] = useState([]);
   const teacher = studentAndTeachers.filter((st) => st.role === 'TEACHER');
   const activeStudents = studentAndTeachers.filter(
     (st) => st.role === 'STUDENT' && st.educational_status === 'ACTIVE',
@@ -192,6 +198,32 @@ const CohortSideBar = ({
         });
       });
   }, [slug]);
+
+  useEffect(() => {
+    fetch('/api/socketio').finally(() => {
+      const socket = io();
+      if (profile?.id) {
+        socket.once('connect', () => {
+          socket.emit('user-connection', { userId: profile.id });
+        });
+      } else {
+        socket.emit('user-disconnection', { userId: profile.id });
+      }
+
+      // socket.on('disconnect', () => {
+      //   console.log('disconnect');
+      // });
+      socket.on('user-info', (data) => {
+        // console.log('data received from server:::', data);
+
+        // eslint-disable-next-line no-unused-vars
+        const userIds = Object.entries(data).map(([_, v]) => v);
+        setUsersConnected(userIds);
+      });
+    });
+  }, []);
+
+  console.log('usersConnected:::', usersConnected);
 
   useEffect(() => {
     if (studentsJoined?.length === 0) {
@@ -283,6 +315,7 @@ const CohortSideBar = ({
           <ProfilesSection
             title={t('cohortSideBar.assistant')}
             profiles={teacherAssistants}
+            usersConnected={usersConnected}
           />
         )}
         <Tabs display="flex" flexDirection="column" variant="unstyled" gridGap="16px">
@@ -342,6 +375,7 @@ const CohortSideBar = ({
                 ? (
                   <ProfilesSection
                     profiles={activeStudents}
+                    usersConnected={usersConnected}
                   />
                 ) : (
                   <>
@@ -379,6 +413,7 @@ ProfilesSection.propTypes = {
   paginationProps: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
   setAlumniGeeksList: PropTypes.oneOfType([PropTypes.func, PropTypes.any]),
   profiles: PropTypes.arrayOf(PropTypes.object),
+  usersConnected: PropTypes.arrayOf(PropTypes.number),
 };
 
 ProfilesSection.defaultProps = {
@@ -386,6 +421,7 @@ ProfilesSection.defaultProps = {
   paginationProps: null,
   setAlumniGeeksList: () => {},
   profiles: [],
+  usersConnected: [],
 };
 
 CohortSideBar.propTypes = {

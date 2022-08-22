@@ -13,16 +13,14 @@ import {
 import PropTypes from 'prop-types';
 import { Formik, Form, Field } from 'formik';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import getT from 'next-translate/getT';
 import Image from 'next/image';
-import io from 'socket.io-client';
 import Heading from '../common/components/Heading';
 import Text from '../common/components/Text';
 import Icon from '../common/components/Icon';
 import validationSchema from '../common/components/Forms/validationSchemas';
 import bc from '../common/services/breathecode';
-import { usePersistent } from '../common/hooks/usePersistent';
 import { setStorageItem } from '../utils';
 
 export const getStaticProps = async ({ locale, locales }) => {
@@ -52,30 +50,9 @@ export default function Home() {
 
   const { colorMode } = useColorMode();
   const commonColor = useColorModeValue('gray.600', 'gray.300');
-  const [profile] = usePersistent('profile', {});
   const commonBackground = useColorModeValue('white', 'darkTheme');
   const socials = t('social:content', {}, { returnObjects: true });
   const socialsFiltered = socials.filter((social) => social.available.includes('home'));
-
-  useEffect(() => {
-    fetch('/api/socketio').finally(() => {
-      const socket = io();
-      if (profile?.id) {
-        socket.once('connect', () => {
-          socket.emit('user-connection', { userId: profile.id });
-        });
-      } else {
-        socket.emit('user-disconnection', { userId: profile.id });
-      }
-
-      // socket.on('disconnect', () => {
-      //   console.log('disconnect');
-      // });
-      socket.on('user-info', (msg) => {
-        console.log('data received from server:::', msg);
-      });
-    });
-  }, []);
 
   console.log('router.asPath', router.asPath);
   // useEffect(() => {

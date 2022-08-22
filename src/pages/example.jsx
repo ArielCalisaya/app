@@ -1,13 +1,9 @@
 import { Box } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
-// import io from 'socket.io-client';
-import { useRouter } from 'next/router';
 import styles from '../../styles/Home.module.css';
 import KPI from '../common/components/KPI';
 import { H1 } from '../common/styledComponents/Head';
-import socket from '../common/services/socket.io';
-import useAuth from '../common/hooks/useAuth';
 
 export const getStaticProps = () => ({
   props: {
@@ -20,10 +16,7 @@ export const getStaticProps = () => ({
 // let socket;
 
 export default function Example() {
-  const { user } = useAuth();
   const { t } = useTranslation(['common', 'counter']);
-  const [input, setInput] = useState('');
-  const router = useRouter();
   const randomLabels = {
     0: 'Tomatoes',
     1: 'Apple',
@@ -53,39 +46,6 @@ export default function Example() {
     }, 4500);
   }, [randomRumber]);
 
-  useEffect(() => {
-    socket.userConnection();
-    // socket.io.on('user-connection', (msg) => {
-    //   console.log('user-connection:::', msg);
-    // });
-    socket.io.on('update-input', (msg) => {
-      setInput(msg);
-    });
-    socket.io.on('user-info', (msg) => {
-      console.log('data received from server:::', msg);
-    });
-  }, []); // Will be executed only once, when component is mounted
-
-  // socket to emit and send user data to server
-  useEffect(() => {
-    if (user?.id) {
-      socket.io.emit('user-connection', { // prevents send data from buffer to server when is not connected
-        userId: user?.id,
-      });
-    }
-  }, [user]);
-  useEffect(() => {
-    // disconect user from server if user goes to another page
-    socket.io.emit('user-disconnection', {
-      userId: user?.id,
-    });
-  }, [router]);
-
-  const onChangeHandler = (e) => {
-    setInput(e.target.value);
-    socket.io.emit('input-change', e.target.value);
-  };
-
   return (
     <main className={styles.main}>
       <H1 type="h1" className={styles.title}>
@@ -113,15 +73,6 @@ export default function Example() {
         <KPI label={randomLabel2} unit="$" value={randomValue2} variation={randomRumber2} />
         <KPI label="Overtime" icon="chronometer" value={3} max={10} variation="-4" />
         <KPI label="The student didn't arrive" icon="ghost" value={0} max={10} variation="0" />
-        <button type="button" id="isOnline">
-          status:
-        </button>
-        <input
-          placeholder="Type something"
-          value={input}
-          onChange={onChangeHandler}
-        />
-
       </Box>
     </main>
   );

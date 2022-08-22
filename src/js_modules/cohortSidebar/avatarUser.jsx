@@ -10,6 +10,7 @@ import {
   PopoverBody,
   Box,
   useMediaQuery,
+  AvatarBadge,
   // AvatarBadge,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -20,7 +21,7 @@ import { format } from 'date-fns';
 import Heading from '../../common/components/Heading';
 import Text from '../../common/components/Text';
 
-const AvatarUser = ({ data, fullName }) => {
+const AvatarUser = ({ data, fullName, isConnected }) => {
   const { user } = data;
   const { t } = useTranslation('dashboard');
   const fullNameLabel = fullName || `${user.first_name} ${user.last_name}`;
@@ -53,14 +54,13 @@ const AvatarUser = ({ data, fullName }) => {
             style={{ userSelect: 'none' }}
             src={user.profile?.avatar_url}
           >
-            {/*
-            //ONLINE/OFFLINE BADGE icon
+            {/* //ONLINE/OFFLINE BADGE icon */}
             <AvatarBadge
-              boxSize="9px"
-              bg={user?.active ? 'success' : 'danger'}
+              boxSize="10px"
+              bg={isConnected ? 'success' : 'gray.400'}
               top="0"
               border="1px solid"
-            /> */}
+            />
           </Avatar>
         </WrapItem>
       </PopoverTrigger>
@@ -106,9 +106,11 @@ const AvatarUser = ({ data, fullName }) => {
 AvatarUser.propTypes = {
   data: PropTypes.objectOf(PropTypes.any).isRequired,
   fullName: PropTypes.string,
+  isConnected: PropTypes.bool,
 };
 AvatarUser.defaultProps = {
   fullName: '',
+  isConnected: false,
 };
 
 export default memo(AvatarUser);
