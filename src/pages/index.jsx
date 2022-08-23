@@ -13,9 +13,10 @@ import {
 import PropTypes from 'prop-types';
 import { Formik, Form, Field } from 'formik';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import getT from 'next-translate/getT';
 import Image from 'next/image';
+import io from 'socket.io-client';
 import Heading from '../common/components/Heading';
 import Text from '../common/components/Text';
 import Icon from '../common/components/Icon';
@@ -54,12 +55,13 @@ export default function Home() {
   const socials = t('social:content', {}, { returnObjects: true });
   const socialsFiltered = socials.filter((social) => social.available.includes('home'));
 
-  console.log('router.asPath', router.asPath);
-  // useEffect(() => {
-  //   // disconnect from server when leaving the page
-  //   const socket = io();
-  //   socket.emit('user-disconnection', { userId: profile.id });
-  // }, [router]);
+  useEffect(() => {
+    // disconnect from server when leaving the page
+    const socket = io();
+    socket.on('now', (data) => {
+      console.log('data received from server', data);
+    });
+  }, []);
 
   const BubblesSvg = () => (
     <svg
