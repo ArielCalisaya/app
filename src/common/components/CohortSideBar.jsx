@@ -30,6 +30,7 @@ import { usePersistent } from '../hooks/usePersistent';
 const ProfilesSection = ({
   title, paginationProps, setAlumniGeeksList, profiles, usersConnected,
 }) => {
+  console.log('usersConnected received from component ProfilesSection :::', usersConnected);
   const { t } = useTranslation('dashboard');
   const [showMoreStudents, setShowMoreStudents] = useState(false);
   // limit the student list to 15 and when "showMoreStudents" is true, show all
@@ -51,7 +52,6 @@ const ProfilesSection = ({
           studentsToShow?.map((c) => {
             const fullName = `${c.user.first_name} ${c.user.last_name}`;
             const isConnected = usersConnected.some((id) => c.user.id === id);
-            console.log(fullName, 'id:', c.user.id, isConnected);
             return (
               <AvatarUser key={`${c.id} - ${c.user.first_name}`} isConnected={isConnected} fullName={fullName} data={c} />
             );
@@ -214,8 +214,6 @@ const CohortSideBar = ({
       //   console.log('disconnect');
       // });
       socket.on('user-info', (data) => {
-        // console.log('data received from server:::', data);
-
         // eslint-disable-next-line no-unused-vars
         const userIds = Object.entries(data).map(([_, v]) => v);
         setUsersConnected(userIds);

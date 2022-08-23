@@ -24,7 +24,7 @@ const ioHandler = (req, res) => {
       });
       socket.on('user-disconnection', () => {
         delete users[socket.id];
-        socket.emit('user-info', users);
+        socket.broadcast.emit('user-info', users);
       });
 
       socket.on('disconnect', () => {
