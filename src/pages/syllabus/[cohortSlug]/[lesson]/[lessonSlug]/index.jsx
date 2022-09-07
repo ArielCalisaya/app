@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import { isWindow, assetTypeValues, getExtensionName } from '../../../../../utils';
 import asPrivate from '../../../../../common/context/PrivateRouteWrapper';
 import Heading from '../../../../../common/components/Heading';
-import { updateAssignment } from '../../../../../common/hooks/useModuleHandler';
+import { updateAssignment, startDay } from '../../../../../common/hooks/useModuleHandler';
 import { ButtonHandlerByTaskStatus } from '../../../../../js_modules/moduleMap/taskHandler';
 import Timeline from '../../../../../common/components/Timeline';
 import getMarkDownContent from '../../../../../common/components/MarkDownParser/markdown';
@@ -31,7 +31,7 @@ import ReactPlayerV2 from '../../../../../common/components/ReactPlayerV2';
 
 const Content = () => {
   const { t } = useTranslation('syllabus');
-  const { choose } = useAuth();
+  const { user, choose } = useAuth();
   const [cohortSession] = usePersistent('cohortSession', {});
   const [sortedAssignments] = usePersistent('sortedAssignments', []);
   const [taskTodo, setTaskTodo] = usePersistent('taskTodo', []);
@@ -48,6 +48,8 @@ const Content = () => {
   const [extendedIsEnabled, setExtendedIsEnabled] = useState(false);
   const [showPendingTasks, setShowPendingTasks] = useState(false);
   const [currentSelectedModule, setCurrentSelectedModule] = useState(null);
+  const [nextModule, setNextModule] = useState(null);
+  const [openNextModuleModal, setOpenNextModuleModal] = useState(false);
   const [quizSlug, setQuizSlug] = useState(null);
   const [showSolutionVideo, setShowSolutionVideo] = useState(false);
   const [selectedSyllabus, setSelectedSyllabus] = useState({});
@@ -117,6 +119,24 @@ const Content = () => {
 
   const scrollTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleStartDay = () => {
+    const updatedTasks = (nextModule.modules || [])?.map((l) => ({
+      ...l,
+      associated_slug: l.slug,
+      cohort: cohortSession.id,
+    }));
+    if (user?.id) {
+      startDay({
+        t,
+        id: user.id,
+        newTasks: updatedTasks,
+        contextState,
+        setContextState,
+        toast,
+      });
+    }
   };
 
   useEffect(() => {
@@ -344,12 +364,18 @@ const Content = () => {
       });
     }
     const findSelectedSyllabus = sortedAssignments.find((l) => l.id === currentSelectedModule);
+    const currentModuleIndex = sortedAssignments.findIndex(
+      (l) => l.modules.some((m) => m.slug === lessonSlug),
+    );
+    const nextModuleData = sortedAssignments[currentModuleIndex + 1];
+
     const defaultSyllabus = sortedAssignments.filter(
       (l) => l.modules.find((m) => m.slug === lessonSlug),
     )[0];
 
     if (defaultSyllabus) {
       setSelectedSyllabus(findSelectedSyllabus || defaultSyllabus);
+      setNextModule(nextModuleData);
       setDefaultSelectedSyllabus(defaultSyllabus);
     }
   }, [sortedAssignments, lessonSlug, currentSelectedModule]);
@@ -810,17 +836,18 @@ const Content = () => {
                   {t('previous-page')}
                 </Box>
               )}
-              {nextAssignment !== null && (
-                <Box
-                  color="blue.default"
-                  cursor="pointer"
-                  fontSize="15px"
-                  display="flex"
-                  alignItems="center"
-                  gridGap="10px"
-                  letterSpacing="0.05em"
-                  fontWeight="700"
-                  onClick={() => {
+
+              <Box
+                color="blue.default"
+                cursor="pointer"
+                fontSize="15px"
+                display="flex"
+                alignItems="center"
+                gridGap="10px"
+                letterSpacing="0.05em"
+                fontWeight="700"
+                onClick={() => {
+                  if (nextAssignment !== null) {
                     setClickedPage(nextAssignment);
                     if (taskIsNotDone) {
                       setOpenNextPageModal(true);
@@ -832,18 +859,21 @@ const Content = () => {
                         router.push(`/syllabus/${cohortSlug}/${nextAssignment?.type?.toLowerCase()}/${nextAssignment?.slug}`);
                       }
                     }
-                  }}
+                  } else {
+                    setOpenNextModuleModal(true);
+                    console.log(`You have reached the end of the current module "${label}" but you can start the next module "${nextModule.label}" right way.`);
+                  }
+                }}
+              >
+                Next Module
+                <Box
+                  as="span"
+                  display="block"
+                  transform="rotate(180deg)"
                 >
-                  {t('next-page')}
-                  <Box
-                    as="span"
-                    display="block"
-                    transform="rotate(180deg)"
-                  >
-                    <Icon icon="arrowLeft2" width="18px" height="10px" />
-                  </Box>
+                  <Icon icon="arrowLeft2" width="18px" height="10px" />
                 </Box>
-              )}
+              </Box>
 
               <Modal isOpen={openNextPageModal} size="xl" margin="0 10px" onClose={() => setOpenNextPageModal(false)}>
                 <ModalOverlay />
@@ -890,6 +920,41 @@ const Content = () => {
                           setOpenNextPageModal(false);
                         }}
                       />
+                    </Box>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+
+              <Modal isOpen={openNextModuleModal} size="xl" margin="0 10px" onClose={() => setOpenNextModuleModal(false)}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalCloseButton />
+                  <ModalBody padding={{ base: '26px 18px', md: '42px 36px' }}>
+                    <Heading size="xsm" fontWeight="700" padding={{ base: '0 1rem 26px 1rem', md: '0 4rem 52px 4rem' }} textAlign="center">
+                      {`You have reached the end of the current module "${label}" but you can start the next module "${nextModule?.label}" right way.`}
+                    </Heading>
+                    <Box display="flex" flexDirection={{ base: 'column', sm: 'row' }} gridGap="12px" justifyContent="space-around">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          router.push(`/syllabus/${cohortSlug}/${nextAssignment?.type?.toLowerCase()}/${nextAssignment?.slug}`);
+                          setOpenNextPageModal(false);
+                        }}
+                        textTransform="uppercase"
+                        fontSize="13px"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          handleStartDay();
+                        }}
+                        textTransform="uppercase"
+                        fontSize="13px"
+                      >
+                        Yes, let&apos;s start the next module
+                      </Button>
                     </Box>
                   </ModalBody>
                 </ModalContent>
