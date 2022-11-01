@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { useEffect, useState } from 'react';
+import {
+  useEffect, useState, useRef,
+} from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import axios from 'axios';
 import {
@@ -100,6 +102,7 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
   const { t } = useTranslation('lesson');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const markdownData = markdown ? getMarkDownContent(markdown) : '';
+  const iframeRef = useRef();
 
   const translations = lesson?.translations || { es: '', en: '', us: '' };
 
@@ -148,6 +151,20 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
         });
     }
   }, [language]);
+
+  useEffect(() => {
+    // resize iframeRef height when className "notebook-container" appears set scrollHeight to iframeRef
+    const iframe = iframeRef.current;
+    const notebookContainer = iframe?.contentWindow ? iframe?.contentWindow?.document?.getElementsByClassName('notebook-container')[0] : iframe;
+    const notebookContainerObserver = new MutationObserver(() => {
+      if (notebookContainer) {
+        iframe.style.height = `${notebookContainer.scrollHeight}px`;
+      }
+    });
+    notebookContainerObserver?.observe(notebookContainer, { attributes: true, childList: true, subtree: true });
+  }, [ipynbHtmlUrl]);
+
+  // }, [iframeLoaded, ipynbContainer]);
 
   return (
     <>
@@ -268,12 +285,14 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
                 </Tooltip>
               </Button>
               <iframe
-                id="iframe"
+                id="iframe ifm"
+                ref={iframeRef}
+                className="iframe-content"
                 src={`${ipynbHtmlUrl}?theme=${currentTheme}&plain=true`}
                 seamless
                 style={{
                   width: '100%',
-                  height: '80vh',
+                  // height: '0',
                   maxHeight: '100%',
                 }}
                 title={`${lesson.title} IPython Notebook`}
