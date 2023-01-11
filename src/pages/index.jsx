@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import getT from 'next-translate/getT';
 import Image from 'next/image';
+import { useControls } from 'leva';
 import Heading from '../common/components/Heading';
 import Text from '../common/components/Text';
 import Icon from '../common/components/Icon';
@@ -53,6 +54,14 @@ export default function Home() {
   const commonBackground = useColorModeValue('white', 'darkTheme');
   const socials = t('social:content', {}, { returnObjects: true });
   const socialsFiltered = socials.filter((social) => social.available.includes('home'));
+  const levaConfig = useControls({
+    host: {
+      value: 'localhost',
+      options: ['localhost', 'staging', 'production'],
+    },
+  });
+
+  console.log('levaConfig:::', levaConfig);
 
   const BubblesSvg = () => (
     <svg
