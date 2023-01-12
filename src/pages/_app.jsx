@@ -20,6 +20,7 @@ import Footer from '../common/components/Footer';
 import Helmet from '../common/components/Helmet';
 import InterceptionLoader from '../common/components/InterceptionLoader';
 import useAuth from '../common/hooks/useAuth';
+import DevConfig from '../common/components/DevConfig';
 import '../../styles/datePicker.css';
 import '@fontsource/lato/100.css';
 import '@fontsource/lato/300.css';
@@ -57,6 +58,7 @@ function App({ Component, pageProps }) {
       <Helmet
         {...pageProps.seo}
       />
+      <DevConfig />
       <CookiesProvider>
         <AuthProvider>
           <ConnectionProvider>
