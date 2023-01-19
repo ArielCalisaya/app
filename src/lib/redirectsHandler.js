@@ -59,13 +59,16 @@ const publicRedirectByAsset = ({
 }) => {
   const translationUs = translations?.us || translations?.en;
 
+  // console.log('userPathName:::', userPathName);
+  // console.log('translations:::', translations);
   if (aliasRedirect) {
     return router.push(userPathName);
   }
 
   if (translations?.es !== undefined && (
     userPathName === `/default/${pagePath}/${translations.es}`
-    || userPathName === `/es/${pagePath}/${translationUs}`)
+    || userPathName === `/es/${pagePath}/${translationUs}`
+    || userPathName === `/${pagePath}/${translations?.es}`)
   ) {
     console.log(`Page: redirecting from ${userPathName} → ${`/es/${pagePath}/${translations.es}`}`);
     return router.push(`/es/${pagePath}/${translations.es}`);
@@ -74,7 +77,8 @@ const publicRedirectByAsset = ({
   if (
     translationUs !== undefined && (
       userPathName === `/default/${pagePath}/${translationUs}`
-      || userPathName === `/en/${pagePath}/${translations.es}`)
+      || userPathName === `/en/${pagePath}/${translations.es}`
+      || userPathName === `/${pagePath}/${translations?.us || translations?.en}`)
   ) {
     console.log(`Page: redirecting from ${userPathName} → ${`/${pagePath}/${translationUs}`}`);
     return router.push(`/en/${pagePath}/${translationUs}`);

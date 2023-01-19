@@ -9,10 +9,11 @@ import {
   PopoverArrow,
   Button,
   useColorModeValue,
+  Link,
 } from '@chakra-ui/react';
 import styles from '../../../styles/flags.module.css';
 import navbarTR from '../translations/navbar';
-import NextChakraLink from './NextChakraLink';
+// import NextChakraLink from './NextChakraLink';
 
 const LanguageSelector = ({ display, translations }) => {
   const router = useRouter();
@@ -83,13 +84,14 @@ const LanguageSelector = ({ display, translations }) => {
             const lang = languagesTR.filter((language) => language.value === l)[0];
             const value = translationsPropsExists ? lang.value : l.value;
             const label = translationsPropsExists ? lang.label : l.label;
-            const path = translationsPropsExists ? translations[value] : router.asPath;
+
+            const cleanedUrl = router.asPath.replace(`/${value}/`, '');
             return (
-              <NextChakraLink
+              <Link
                 width="100%"
                 key={value}
-                href={path}
-                locale={value}
+                href={`/${value}${cleanedUrl}`}
+                // locale={value}
                 role="group"
                 alignSelf="center"
                 display="flex"
@@ -103,7 +105,26 @@ const LanguageSelector = ({ display, translations }) => {
               >
                 <Box className={`${styles.flag} ${styles[value]}`} width="25px" height="25px" />
                 {label}
-              </NextChakraLink>
+              </Link>
+              // <NextChakraLink
+              //   width="100%"
+              //   key={value}
+              //   href={href}
+              //   // locale={value}
+              //   role="group"
+              //   alignSelf="center"
+              //   display="flex"
+              //   gridGap="5px"
+              //   fontWeight="bold"
+              //   textDecoration="none"
+              //   opacity={locale === (value) ? 1 : 0.75}
+              //   _hover={{
+              //     opacity: 1,
+              //   }}
+              // >
+              //   <Box className={`${styles.flag} ${styles[value]}`} width="25px" height="25px" />
+              //   {label}
+              // </NextChakraLink>
             );
           })}
         </Box>

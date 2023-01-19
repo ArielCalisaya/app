@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import getT from 'next-translate/getT';
 import Icon from '../../common/components/Icon';
-import { languageLabel, getExtensionName } from '../../utils';
+import { languageLabel, getExtensionName, isWindow } from '../../utils';
 import Heading from '../../common/components/Heading';
 import Link from '../../common/components/NextChakraLink';
 import MarkDownParser from '../../common/components/MarkDownParser';
@@ -100,15 +100,17 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
   const { t } = useTranslation('lesson');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const markdownData = markdown ? getMarkDownContent(markdown) : '';
+  const pathname = isWindow ? window?.location?.pathname : '';
+  const slug = pathname?.substring(pathname?.lastIndexOf('/') + 1);
 
-  const translations = lesson?.translations || { es: '', en: '', us: '' };
+  const translations = lesson?.translations;
 
   const router = useRouter();
   const toast = useToast();
   const currentTheme = useColorModeValue('light', 'dark');
   const iconColorTheme = useColorModeValue('#000000', '#ffffff');
   const language = router.locale === 'en' ? 'us' : 'es';
-  const { slug } = router.query;
+  // const { slug } = router.query;
   const currentLanguageLabel = languageLabel[language] || language;
 
   useEffect(async () => {
@@ -118,17 +120,23 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
     const dataRedirect = await fetch(`${process.env.BREATHECODE_HOST}/v1/registry/asset/${redirectSlug}`);
     const redirectResults = await dataRedirect.json();
 
-    const pathWithoutSlug = router.asPath.slice(0, router.asPath.lastIndexOf('/'));
-    const userPathName = `/${router.locale}${pathWithoutSlug}/${redirectResults?.slug || lesson?.slug || slug}`;
+    const currentPathName = window?.location?.href.replace(window?.location?.origin, '');
+    const pathWithoutSlug = currentPathName?.slice(0, currentPathName?.lastIndexOf('/'));
+    const userPathName = `${pathWithoutSlug}/${redirectResults?.slug || lesson?.slug || slug}`;
+    // console.log('router:::', router);
+    // const userPathName = `/${router.locale}${pathWithoutSlug}/${redirectResults?.slug || lesson?.slug || slug}`;
+    // console.log('userPathNameClient:::', userPathName);
+    // console.log('currentPathName:::', currentPathName);
     const aliasRedirect = aliasList[slug] !== undefined && userPathName;
     const pagePath = 'lesson';
 
     publicRedirectByAsset({
       router, aliasRedirect, translations, userPathName, pagePath,
     });
-
+    // if (slug) {
+    // }
     return () => {};
-  }, [router, router.locale, translations]);
+  }, [router, slug, router.locale, translations]);
 
   useEffect(() => {
     if (ipynbHtmlUrl === '') {
