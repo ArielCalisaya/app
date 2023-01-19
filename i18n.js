@@ -32,10 +32,9 @@ module.exports = {
     '/thank-you': ['thank-you'],
     '/about-us': ['about-us'],
   },
-  locales: ['default', 'en', 'es'],
-  defaultLocale: 'default',
+  locales: ['en', 'es'],
+  defaultLocale: 'en',
   localeDetection: false,
-  showDefaultLocaleInURL: true,
 
   // locales: ['default', 'en', 'es'],
   // // defaultLocale: 'en', // removed for redirects handling purposes
@@ -44,9 +43,10 @@ module.exports = {
 
   // return a Promise with the JSON file.
 
-  // loadLocaleFrom: (lang, ns) => import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default),
-  loadLocaleFrom: (lang, ns) => {
-    if (lang === 'default') return '';
-    return import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default);
-  },
+  loadLocaleFrom: (lang, ns) => import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default),
+
+  // loadLocaleFrom: (lang, ns) => {
+  //   if (lang === 'default') return '';
+  //   return import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default);
+  // },
 };
