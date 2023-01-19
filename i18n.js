@@ -44,9 +44,9 @@ module.exports = {
 
   // return a Promise with the JSON file.
 
-  loadLocaleFrom: (lang, ns) => import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default),
-  // loadLocaleFrom: (lang, ns) => {
-  //   if (lang === 'default') return '';
-  //   return import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default);
-  // },
+  // loadLocaleFrom: (lang, ns) => import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default),
+  loadLocaleFrom: (lang, ns) => {
+    if (lang === 'default') return '';
+    return import(`./public/locales/${lang}/${ns}.json`).then((m) => m.default);
+  },
 };
