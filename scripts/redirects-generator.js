@@ -61,28 +61,28 @@ const redirectByLang = ({ slug, lang, difficulty, assetType }) => {
   if (assetTypeValue === 'LESSON') {
     return {
       source: `/lesson/${slug}`,
-      destination: `/${lang}/lesson/${slug}`,
+      destination: `${lang}/lesson/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'EXERCISE') {
     return {
       source: `/interactive-exercise/${slug}`,
-      destination: `/${lang}/interactive-exercise/${slug}`,
+      destination: `${lang}/interactive-exercise/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'PROJECT' && difficulty) {
     return {
       source: `/interactive-coding-tutorial/${difficulty}/${slug}`,
-      destination: `/${lang}/interactive-coding-tutorial/${difficulty}/${slug}`,
+      destination: `${lang}/interactive-coding-tutorial/${difficulty}/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'ARTICLE') {
     return {
       source: `/how-to/${slug}`,
-      destination: `/${lang}/how-to/${slug}`,
+      destination: `${lang}/how-to/${slug}`,
       ...redirectConfig,
     };
   }
