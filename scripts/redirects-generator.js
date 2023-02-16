@@ -58,31 +58,36 @@ const getHowTo = () => {
 
 const redirectByLang = ({ slug, lang, difficulty, assetType }) => {
   const assetTypeValue = assetType?.toUpperCase();
+  const sourceLang = '/:lang(es|en)';
+  const destinationLang = `/:lang(${lang})`;
+
+  // "source": "/:lang(es|en)/lesson/how-to-use-gitpod-es",{
+  // "destination": "/:lang(es)/lesson/how-to-use-gitpod-es",}
   if (assetTypeValue === 'LESSON') {
     return {
-      source: `/lesson/${slug}`,
-      destination: `${lang}/lesson/${slug}`,
+      source: `${sourceLang}/lesson/${slug}`,
+      destination: `${destinationLang}/lesson/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'EXERCISE') {
     return {
-      source: `/interactive-exercise/${slug}`,
-      destination: `${lang}/interactive-exercise/${slug}`,
+      source: `${sourceLang}/interactive-exercise/${slug}`,
+      destination: `${destinationLang}/interactive-exercise/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'PROJECT' && difficulty) {
     return {
-      source: `/interactive-coding-tutorial/${difficulty}/${slug}`,
-      destination: `${lang}/interactive-coding-tutorial/${difficulty}/${slug}`,
+      source: `${sourceLang}/interactive-coding-tutorial/${difficulty}/${slug}`,
+      destination: `${destinationLang}/interactive-coding-tutorial/${difficulty}/${slug}`,
       ...redirectConfig,
     };
   }
   if (assetTypeValue === 'ARTICLE') {
     return {
-      source: `/how-to/${slug}`,
-      destination: `${lang}/how-to/${slug}`,
+      source: `${sourceLang}/how-to/${slug}`,
+      destination: `${destinationLang}/how-to/${slug}`,
       ...redirectConfig,
     };
   }
