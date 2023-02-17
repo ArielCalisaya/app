@@ -16,6 +16,7 @@ import { MDSkeleton } from '../../common/components/Skeleton';
 import getMarkDownContent from '../../common/components/MarkDownParser/markdown';
 import { publicRedirectByAsset } from '../../lib/redirectsHandler';
 import modifyEnv from '../../../modifyEnv';
+// import redirectsFromApi from '../../../../public/redirects-from-api.json';
 
 export const getStaticPaths = async ({ locales }) => {
   let projects = [];
