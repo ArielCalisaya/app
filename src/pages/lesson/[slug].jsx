@@ -38,27 +38,24 @@ export const getStaticPaths = async ({ locales }) => {
   };
 };
 
-export const getStaticProps = async ({ params, locale, locales, context }) => {
+export const getStaticProps = async ({ params, locale, locales }) => {
   const t = await getT(locale, 'lesson');
   const { slug } = params;
   const staticImage = t('seo.image', { domain: process.env.WEBSITE_URL || 'https://4geeks.com' });
 
-  // console.log('redirectsFromApi:::', redirectsFromApi);
-  // eslint-disable-next-line no-unused-vars
-  const redirect = redirectsFromApi.find((r) => r.source === `/lesson/${slug}`);
+  const redirect = redirectsFromApi.find((r) => r.source === `${locale === 'en' ? '' : `/${locale}`}/lesson/${slug}`);
   // console.log('params:::', params);
+  // console.log('locale:::', locale);
   // console.log('redirect:::', redirect);
-  console.log('context:::', context);
-  console.log('asPath:::', context?.router?.asPath);
 
-  // if (redirect) {
-  //   return {
-  //     redirect: {
-  //       destination: redirect.destination,
-  //       permanent: redirect?.permanent,
-  //     },
-  //   };
-  // }
+  if (redirect) {
+    return {
+      redirect: {
+        destination: redirect.destination,
+        permanent: redirect?.permanent,
+      },
+    };
+  }
 
   const response = await fetch(`${process.env.BREATHECODE_HOST}/v1/registry/asset/${slug}?asset_type=LESSON`);
   const lesson = await response.json();
@@ -128,7 +125,6 @@ export const getStaticProps = async ({ params, locale, locales, context }) => {
       },
       fallback: false,
       lesson,
-      context,
       translations: translationArray,
       markdown,
       ipynbHtmlUrl,
@@ -136,12 +132,11 @@ export const getStaticProps = async ({ params, locale, locales, context }) => {
   };
 };
 
-const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl, context }) => {
+const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl }) => {
   const { t } = useTranslation('lesson');
   const BREATHECODE_HOST = modifyEnv({ queryString: 'host', env: process.env.BREATHECODE_HOST });
   const [isFullScreen, setIsFullScreen] = useState(false);
   const markdownData = markdown ? getMarkDownContent(markdown) : '';
-  console.log('context:::', context);
 
   const translations = lesson?.translations || { es: '', en: '', us: '' };
 
@@ -332,7 +327,6 @@ const LessonSlug = ({ lesson, markdown, ipynbHtmlUrl, context }) => {
 
 LessonSlug.propTypes = {
   lesson: PropTypes.objectOf(PropTypes.any).isRequired,
-  context: PropTypes.objectOf(PropTypes.any).isRequired,
   markdown: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   ipynbHtmlUrl: PropTypes.string.isRequired,
 };
