@@ -1,0 +1,169 @@
+{
+  "id": "mkt_one_column",
+  "type": "SharedSlice",
+  "name": "MktOneColumn",
+  "description": "MktOneColumn",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "sktwi1xtmkfgx8626",
+      "description": "MktOneColumn",
+      "primary": {
+        "title": {
+          "type": "Text",
+          "config": {
+            "label": "Title",
+            "placeholder": ""
+          }
+        },
+        "kpi_list": {
+          "type": "StructuredText",
+          "config": {
+            "label": "KPI List",
+            "placeholder": "",
+            "allowTargetBlank": true,
+            "multi": "list-item"
+          }
+        },
+        "subtitle": {
+          "type": "Text",
+          "config": {
+            "label": "Subtitle",
+            "placeholder": ""
+          }
+        },
+        "description": {
+          "type": "Text",
+          "config": {
+            "label": "Description",
+            "placeholder": ""
+          }
+        },
+        "button_label": {
+          "type": "Text",
+          "config": {
+            "label": "Button label",
+            "placeholder": ""
+          }
+        },
+        "button_url": {
+          "type": "Link",
+          "config": {
+            "label": "Button url",
+            "placeholder": "",
+            "select": null
+          }
+        },
+        "kpi_title_1": {
+          "type": "Text",
+          "config": {
+            "label": "KPI title 1",
+            "placeholder": ""
+          }
+        },
+        "kpi_description_1": {
+          "type": "Text",
+          "config": {
+            "label": "KPI description 1",
+            "placeholder": ""
+          }
+        },
+        "kpi_color_1": {
+          "type": "Text",
+          "config": {
+            "label": "KPI color 1",
+            "placeholder": ""
+          }
+        },
+        "kpi_title_2": {
+          "type": "Text",
+          "config": {
+            "label": "KPI title 2",
+            "placeholder": ""
+          }
+        },
+        "kpi_description_2": {
+          "type": "Text",
+          "config": {
+            "label": "KPI description 2",
+            "placeholder": ""
+          }
+        },
+        "kpi_color_2": {
+          "type": "Text",
+          "config": {
+            "label": "KPI color 2",
+            "placeholder": ""
+          }
+        },
+        "kpi_title_3": {
+          "type": "Text",
+          "config": {
+            "label": "KPI title 3",
+            "placeholder": ""
+          }
+        },
+        "kpi_description_3": {
+          "type": "Text",
+          "config": {
+            "label": "KPI description 3",
+            "placeholder": ""
+          }
+        },
+        "kpi_color_3": {
+          "type": "Text",
+          "config": {
+            "label": "KPI color 3",
+            "placeholder": ""
+          }
+        },
+        "kpi_title_4": {
+          "type": "Text",
+          "config": {
+            "label": "KPI title 4",
+            "placeholder": ""
+          }
+        },
+        "kpi_description_4": {
+          "type": "Text",
+          "config": {
+            "label": "KPI description 4",
+            "placeholder": ""
+          }
+        },
+        "kpi_color_4": {
+          "type": "Text",
+          "config": {
+            "label": "KPI color 4",
+            "placeholder": ""
+          }
+        },
+        "kpi_title_5": {
+          "type": "Text",
+          "config": {
+            "label": "KPI title 5",
+            "placeholder": ""
+          }
+        },
+        "kpi_description_5": {
+          "type": "Text",
+          "config": {
+            "label": "KPI description 5",
+            "placeholder": ""
+          }
+        },
+        "kpi_color_5": {
+          "type": "Text",
+          "config": {
+            "label": "KPI color 5",
+            "placeholder": ""
+          }
+        }
+      },
+      "items": {},
+      "imageUrl": "https://images.prismic.io/slice-machine/621a5ec4-0387-4bc5-9860-2dd46cbc07cd_default_ss.png?auto=compress,format"
+    }
+  ]
+}

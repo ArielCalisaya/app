@@ -1,0 +1,112 @@
+[
+  {
+    "__TYPE__": "SharedSliceContent",
+    "variation": "default",
+    "primary": {
+      "title": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "This is a long title that can have several lines like this"
+      },
+      "kpi_list": {
+        "__TYPE__": "StructuredTextContent",
+        "value": [
+          {
+            "type": "paragraph",
+            "content": {
+              "text": "Officia qui aute ad Lorem tempor ut eiusmod amet nulla consectetur fugiat consequat. Ea in ex ad eu ea nulla tempor. Est reprehenderit dolore exercitation quis culpa culpa cillum adipisicing eu consectetur id."
+            }
+          }
+        ]
+      },
+      "subtitle": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "This is a small subtitle"
+      },
+      "description": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu."
+      },
+      "button_label": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "Button"
+      },
+      "button_url": {
+        "__TYPE__": "LinkContent",
+        "value": {
+          "__TYPE__": "ExternalLink",
+          "url": "http://google.com"
+        }
+      },
+      "kpi_description_1": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "Providing mentoships"
+      },
+      "kpi_description_2": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "Mentoring sessions"
+      },
+      "kpi_description_3": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "People could find a Job in tech"
+      },
+      "kpi_color_3": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "rgb(255, 183, 24)"
+      },
+      "kpi_description_4": {
+        "__TYPE__": "FieldContent",
+        "value": "do",
+        "type": "Text"
+      },
+      "kpi_color_4": {
+        "__TYPE__": "FieldContent",
+        "value": "heard",
+        "type": "Text"
+      },
+      "kpi_description_5": {
+        "__TYPE__": "FieldContent",
+        "value": "yourself",
+        "type": "Text"
+      },
+      "kpi_color_5": {
+        "__TYPE__": "FieldContent",
+        "value": "damage",
+        "type": "Text"
+      },
+      "kpi_title_1": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "3 years"
+      },
+      "kpi_title_2": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "+20.790"
+      },
+      "kpi_color_2": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "rgb(37, 191, 108)"
+      },
+      "kpi_title_3": {
+        "__TYPE__": "FieldContent",
+        "type": "Text",
+        "value": "+1.200"
+      }
+    },
+    "items": [
+      {
+        "__TYPE__": "GroupItemContent",
+        "value": []
+      }
+    ]
+  }
+]

@@ -68,7 +68,7 @@ interface PageDocumentData {
  * Slice for *Page → Slice Zone*
  *
  */
-type PageDocumentDataSlicesSlice = TitleIntroductionSlice | MarkdownSlice;
+type PageDocumentDataSlicesSlice = TitleIntroductionSlice | MarkdownSlice | MktOneColumnSlice;
 /**
  * Page document from Prismic
  *
@@ -150,6 +150,304 @@ type MarkdownSliceVariation = MarkdownSliceDefault;
  *
  */
 export type MarkdownSlice = prismicT.SharedSlice<"markdown", MarkdownSliceVariation>;
+/**
+ * Primary content in MktOneColumn → Primary
+ *
+ */
+interface MktOneColumnSliceDefaultPrimary {
+    /**
+     * Title field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.title
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    title: prismicT.KeyTextField;
+    /**
+     * KPI List field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Rich Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_list
+     * - **Documentation**: https://prismic.io/docs/core-concepts/rich-text-title
+     *
+     */
+    kpi_list: prismicT.RichTextField;
+    /**
+     * Subtitle field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.subtitle
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    subtitle: prismicT.KeyTextField;
+    /**
+     * Description field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.description
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    description: prismicT.KeyTextField;
+    /**
+     * Button label field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.button_label
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    button_label: prismicT.KeyTextField;
+    /**
+     * Button url field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Link
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.button_url
+     * - **Documentation**: https://prismic.io/docs/core-concepts/link-content-relationship
+     *
+     */
+    button_url: prismicT.LinkField;
+    /**
+     * KPI title 1 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_title_1
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_title_1: prismicT.KeyTextField;
+    /**
+     * KPI description 1 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_description_1
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_description_1: prismicT.KeyTextField;
+    /**
+     * KPI color 1 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_color_1
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_color_1: prismicT.KeyTextField;
+    /**
+     * KPI title 2 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_title_2
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_title_2: prismicT.KeyTextField;
+    /**
+     * KPI description 2 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_description_2
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_description_2: prismicT.KeyTextField;
+    /**
+     * KPI color 2 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_color_2
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_color_2: prismicT.KeyTextField;
+    /**
+     * KPI title 3 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_title_3
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_title_3: prismicT.KeyTextField;
+    /**
+     * KPI description 3 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_description_3
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_description_3: prismicT.KeyTextField;
+    /**
+     * KPI color 3 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_color_3
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_color_3: prismicT.KeyTextField;
+    /**
+     * KPI title 4 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_title_4
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_title_4: prismicT.KeyTextField;
+    /**
+     * KPI description 4 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_description_4
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_description_4: prismicT.KeyTextField;
+    /**
+     * KPI color 4 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_color_4
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_color_4: prismicT.KeyTextField;
+    /**
+     * KPI title 5 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_title_5
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_title_5: prismicT.KeyTextField;
+    /**
+     * KPI description 5 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_description_5
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_description_5: prismicT.KeyTextField;
+    /**
+     * KPI color 5 field in *MktOneColumn → Primary*
+     *
+     * - **Field Type**: Text
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_one_column.primary.kpi_color_5
+     * - **Documentation**: https://prismic.io/docs/core-concepts/key-text
+     *
+     */
+    kpi_color_5: prismicT.KeyTextField;
+}
+/**
+ * Default variation for MktOneColumn Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: `MktOneColumn`
+ * - **Documentation**: https://prismic.io/docs/core-concepts/reusing-slices
+ *
+ */
+export type MktOneColumnSliceDefault = prismicT.SharedSliceVariation<"default", Simplify<MktOneColumnSliceDefaultPrimary>, never>;
+/**
+ * Slice variation for *MktOneColumn*
+ *
+ */
+type MktOneColumnSliceVariation = MktOneColumnSliceDefault;
+/**
+ * MktOneColumn Shared Slice
+ *
+ * - **API ID**: `mkt_one_column`
+ * - **Description**: `MktOneColumn`
+ * - **Documentation**: https://prismic.io/docs/core-concepts/reusing-slices
+ *
+ */
+export type MktOneColumnSlice = prismicT.SharedSlice<"mkt_one_column", MktOneColumnSliceVariation>;
+/**
+ * Primary content in MktTwoColumnSideImage → Primary
+ *
+ */
+interface MktTwoColumnSideImageSliceDefaultPrimary {
+    /**
+     * Title field in *MktTwoColumnSideImage → Primary*
+     *
+     * - **Field Type**: Title
+     * - **Placeholder**: This is where it all begins...
+     * - **API ID Path**: mkt_two_column_side_image.primary.title
+     * - **Documentation**: https://prismic.io/docs/core-concepts/rich-text-title
+     *
+     */
+    title: prismicT.TitleField;
+    /**
+     * Description field in *MktTwoColumnSideImage → Primary*
+     *
+     * - **Field Type**: Rich Text
+     * - **Placeholder**: A nice description of your feature
+     * - **API ID Path**: mkt_two_column_side_image.primary.description
+     * - **Documentation**: https://prismic.io/docs/core-concepts/rich-text-title
+     *
+     */
+    description: prismicT.RichTextField;
+    /**
+     * Image Position field in *MktTwoColumnSideImage → Primary*
+     *
+     * - **Field Type**: Select
+     * - **Placeholder**: *None*
+     * - **API ID Path**: mkt_two_column_side_image.primary.image_position
+     * - **Documentation**: https://prismic.io/docs/core-concepts/select
+     *
+     */
+    image_position: prismicT.SelectField<"1" | "2">;
+}
+/**
+ * Default variation for MktTwoColumnSideImage Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: `MktTwoColumnSideImage`
+ * - **Documentation**: https://prismic.io/docs/core-concepts/reusing-slices
+ *
+ */
+export type MktTwoColumnSideImageSliceDefault = prismicT.SharedSliceVariation<"default", Simplify<MktTwoColumnSideImageSliceDefaultPrimary>, never>;
+/**
+ * Slice variation for *MktTwoColumnSideImage*
+ *
+ */
+type MktTwoColumnSideImageSliceVariation = MktTwoColumnSideImageSliceDefault;
+/**
+ * MktTwoColumnSideImage Shared Slice
+ *
+ * - **API ID**: `mkt_two_column_side_image`
+ * - **Description**: `MktTwoColumnSideImage`
+ * - **Documentation**: https://prismic.io/docs/core-concepts/reusing-slices
+ *
+ */
+export type MktTwoColumnSideImageSlice = prismicT.SharedSlice<"mkt_two_column_side_image", MktTwoColumnSideImageSliceVariation>;
 /**
  * Primary content in TitleIntroduction → Primary
  *
@@ -244,6 +542,6 @@ declare module "@prismicio/client" {
         (repositoryNameOrEndpoint: string, options?: prismic.ClientConfig): prismic.Client<AllDocumentTypes>;
     }
     namespace Content {
-        export type { PageDocumentData, PageDocumentDataSlicesSlice, PageDocument, AllDocumentTypes, MarkdownSliceDefaultPrimary, MarkdownSliceDefault, MarkdownSliceVariation, MarkdownSlice, TitleIntroductionSliceDefaultPrimary, TitleIntroductionSliceDefault, TitleIntroductionSliceVariation, TitleIntroductionSlice };
+        export type { PageDocumentData, PageDocumentDataSlicesSlice, PageDocument, AllDocumentTypes, MarkdownSliceDefaultPrimary, MarkdownSliceDefault, MarkdownSliceVariation, MarkdownSlice, MktOneColumnSliceDefaultPrimary, MktOneColumnSliceDefault, MktOneColumnSliceVariation, MktOneColumnSlice, MktTwoColumnSideImageSliceDefaultPrimary, MktTwoColumnSideImageSliceDefault, MktTwoColumnSideImageSliceVariation, MktTwoColumnSideImageSlice, TitleIntroductionSliceDefaultPrimary, TitleIntroductionSliceDefault, TitleIntroductionSliceVariation, TitleIntroductionSlice };
     }
 }

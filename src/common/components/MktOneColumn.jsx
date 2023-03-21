@@ -14,8 +14,37 @@ const MktOneColumn = ({
   buttonUrl,
   buttonLabel,
   kpiList,
+  slice,
 }) => {
   const { fontColor, fontColor2, hexColor, backgroundColor } = useStyle();
+  const sliceKpiList = [
+    {
+      title: slice?.primary?.kpi_title_1,
+      description: slice?.primary?.kpi_description_1,
+      color: slice?.primary?.kpi_color_1,
+    },
+    {
+      title: slice?.primary?.kpi_title_2,
+      description: slice?.primary?.kpi_description_2,
+      color: slice?.primary?.kpi_color_2,
+    },
+    {
+      title: slice?.primary?.kpi_title_3,
+      description: slice?.primary?.kpi_description_3,
+      color: slice?.primary?.kpi_color_3,
+    },
+    {
+      title: slice?.primary?.kpi_title_4,
+      description: slice?.primary?.kpi_description_4,
+      color: slice?.primary?.kpi_color_4,
+    },
+    {
+      title: slice?.primary?.kpi_title_5,
+      description: slice?.primary?.kpi_description_5,
+      color: slice?.primary?.kpi_color_5,
+    },
+  ];
+  const KPIList = sliceKpiList.filter((l) => l?.title?.length > 0) || kpiList;
 
   // eslint-disable-next-line react/prop-types
   const MktKPI = ({ kpiTitle, kpiDescription, color }) => (
@@ -50,17 +79,17 @@ const MktOneColumn = ({
     <Box padding="20px" textAlign="center">
       <Box>
         <Heading marginBottom="15px" as="h4" fontSize="14px" color={hexColor.blueDefault}>
-          {subTitle}
+          {slice?.primary?.subtitle || subTitle}
         </Heading>
-        {kpiList.length > 0 && (
+        {KPIList?.length > 0 && (
           <Box gridGap="20px" flexWrap="wrap" marginBottom="15px" display="flex" justifyContent="center">
-            {kpiList.map((kpi) => (
-              <MktKPI kpiTitle={kpi.title} kpiDescription={kpi.description} color={kpi.color} />
+            {KPIList.map((kpi) => (
+              <MktKPI kpiTitle={kpi?.title} kpiDescription={kpi?.description} color={kpi?.color} />
             ))}
           </Box>
         )}
         <Heading as="h2" size="m">
-          {title}
+          {slice?.primary?.title || title}
         </Heading>
         <Text
           fontSize="sm"
@@ -68,16 +97,17 @@ const MktOneColumn = ({
           margin="15px 0"
           color={fontColor2}
         >
-          {description}
+          {slice?.primary?.description || description}
         </Text>
-        {buttonUrl && (
+
+        {(slice?.primary?.button_url || buttonUrl) && (
           <Link
             variant="buttonDefault"
-            href={buttonUrl}
+            href={slice?.primary?.button_url?.url || buttonUrl}
             textAlign="center"
             display="inline-block"
           >
-            {buttonLabel}
+            {slice?.primary?.button_label || buttonLabel}
           </Link>
         )}
       </Box>
@@ -92,6 +122,7 @@ MktOneColumn.propTypes = {
   buttonUrl: PropTypes.string,
   buttonLabel: PropTypes.string,
   kpiList: PropTypes.arrayOf(PropTypes.any),
+  slice: PropTypes.objectOf(PropTypes.any),
 };
 
 MktOneColumn.defaultProps = {
@@ -101,6 +132,7 @@ MktOneColumn.defaultProps = {
   buttonUrl: null,
   buttonLabel: null,
   kpiList: [],
+  slice: {},
 };
 
 export default MktOneColumn;
