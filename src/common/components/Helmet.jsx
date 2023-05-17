@@ -147,6 +147,8 @@ const Helmet = ({
       <meta property="twitter:description" content={descriptionCleaned} />
       <meta property="twitter:image" content={image} />
       <meta property="twitter:image:alt" content={descriptionCleaned} />
+
+      <script async id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="a3bde736-ee86-46c5-a940-2358d6c6b2ff" data-blockingmode="auto" type="text/javascript" />
     </Head>
   );
 };
