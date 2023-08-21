@@ -12,7 +12,15 @@ const breathecode = {
     headers: {
       ...axios.defaults.headers.common,
     },
-  }).then((res) => res).catch((err) => console.error(err)),
+  }).catch((err) => console.error(err)),
+  post: (url, data) => fetch(url, {
+    method: 'POST',
+    headers: {
+      ...axios.defaults.headers.common,
+    },
+    body: JSON.stringify(data),
+  }).catch((err) => console.error(err)),
+
   auth: () => {
     const url = `${host}/auth`;
     return {
@@ -235,7 +243,7 @@ const breathecode = {
       subscriptions: () => axios.get(`${url}/me/subscription${qs}`),
       courses: () => axios.get(`${host}/marketing/course${qs}`),
       pay: (data) => axios.post(`${url}/pay${qs}`, data),
-      addCard: (data) => axios.post(`${url}/card${qs}`, data),
+      addCard: (data) => breathecode.post(`${url}/card${qs}`, data),
       cancelSubscription: (id) => axios.put(`${url}/subscription/${id}/cancel${qs}`),
       cancelMySubscription: (id) => axios.put(`${url}/me/subscription/${id}/cancel${qs}`),
       getPlan: (slug) => axios.get(`${url}/plan/${slug}${qs}`),

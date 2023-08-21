@@ -21,6 +21,7 @@ import Text from '../../common/components/Text';
 const CustomDateInput = forwardRef(({ value, onClick, ...rest }, ref) => {
   const { t } = useTranslation('signup');
   const { input } = useStyle();
+  // const [modalErrorData, setModalErrorData] = useState({});
   const inputBorderColor = input.borderColor;
 
   return (
@@ -91,7 +92,11 @@ function PaymentInfo() {
   const handleSubmit = (actions, values) => {
     bc.payment().addCard(values)
       .then((resp) => {
-        if (resp) {
+        const data = resp.json();
+        console.log('addCard_RESP:::', resp);
+        console.log('addCard_DATA:::', data);
+
+        if (resp.status < 400 && resp.statusText === 'OK') {
           handlePayment()
             .finally(() => {
               setIsSubmitting(false);
