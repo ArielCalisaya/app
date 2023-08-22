@@ -150,6 +150,11 @@ function PaymentInfo() {
         // alignItems="center"
         borderRadius="17px"
         maxWidth="xl"
+        textAlign="center"
+        headerStyles={{
+          textTransform: 'uppercase',
+          fontSize: '16px',
+        }}
         bodyStyles={{
           margin: '26px auto 16px auto',
           padding: '0 10px',
@@ -166,7 +171,9 @@ function PaymentInfo() {
             Payment could not be procesesd, please try again or contact your bank.
           </Text>
           <Box display="flex" gridGap="24px">
-            <Button variant="outline" onClick={() => setShowModalCardError(false)}>close</Button>
+            <Button variant="outline" onClick={() => setShowModalCardError(false)}>
+              {t('common:close')}
+            </Button>
             <Button variant="default" onClick={handleTryButton}>
               Try Again
             </Button>
@@ -326,7 +333,7 @@ function PaymentInfo() {
                 <FieldForm
                   type="text"
                   name="owner_name"
-                  externValue={paymentInfo.owner_name}
+                  externValue={paymentInfo?.owner_name}
                   handleOnChange={(e) => {
                     setPaymentInfo('owner_name', e.target.value);
                     setStateCard({ ...stateCard, owner_name: e.target.value });
@@ -339,7 +346,7 @@ function PaymentInfo() {
                 <FieldForm
                   type="text"
                   name="card_number"
-                  externValue={paymentInfo.card_number}
+                  externValue={paymentInfo?.card_number}
                   handleOnChange={(e) => {
                     const value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
                     const newValue = value.replace(/(.{4})/g, '$1 ').trim();
@@ -370,7 +377,7 @@ function PaymentInfo() {
                     style={{ flex: 0.5 }}
                     type="text"
                     name="cvc"
-                    externValue={paymentInfo.cvc}
+                    externValue={paymentInfo?.cvc}
                     maxLength={3}
                     handleOnChange={(e) => {
                       const value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');

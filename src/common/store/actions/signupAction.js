@@ -4,7 +4,7 @@ import { useToast } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import {
-  NEXT_STEP, PREV_STEP, HANDLE_STEP, SET_DATE_PROPS, SET_CHECKOUT_DATA, SET_LOCATION, SET_PAYMENT_INFO,
+  NEXT_STEP, PREV_STEP, HANDLE_STEP, SET_DATE_PROPS, SET_CHECKOUT_DATA, SET_LOCATION, SET_PAYMENT_INFO, RESET_PAYMENT_INFO,
   SET_PLAN_DATA, SET_LOADER, SET_PLAN_CHECKOUT_DATA, SET_PLAN_PROPS, SET_COHORT_PLANS, TOGGLE_IF_ENROLLED, PREPARING_FOR_COHORT, SET_SERVICE_PROPS, SET_SELECTED_SERVICE,
 } from '../types';
 import { formatPrice, getDiscountedPrice, getNextDateInMonths, getStorageItem, getTimeProps, toCapitalize, unSlugify } from '../../../utils';
@@ -70,6 +70,9 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     payload,
     value,
   });
+  const resetPaymentInfo = () => dispatch({
+    type: RESET_PAYMENT_INFO,
+  });
   const setServiceProps = (payload) => dispatch({
     type: SET_SERVICE_PROPS,
     payload,
@@ -114,8 +117,8 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     const getRequests = () => {
       if (!isTtrial) {
         return {
-          type: data?.type || checkoutData.type,
-          token: data?.token || checkoutData.token,
+          type: data?.type || checkoutData?.type,
+          token: data?.token || checkoutData?.token,
           how_many_installments: data?.installments || selectedPlanCheckoutData?.how_many_months || undefined,
           chosen_period: manyInstallmentsExists ? undefined : (selectedPlanCheckoutData?.period || 'HALF'),
         };
@@ -437,6 +440,7 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     getPaymentText,
     handleServiceToConsume,
     setSelectedService,
+    resetPaymentInfo,
   };
 };
 
