@@ -16,6 +16,7 @@ const breathecode = {
   post: (url, data) => fetch(url, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       ...axios.defaults.headers.common,
     },
     body: JSON.stringify(data),

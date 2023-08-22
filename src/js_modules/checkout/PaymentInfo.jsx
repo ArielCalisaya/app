@@ -3,6 +3,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import useTranslation from 'next-translate/useTranslation';
 import {
+  Avatar,
   Box, Button, Input, useColorModeValue, useToast,
 } from '@chakra-ui/react';
 import { forwardRef, useState } from 'react';
@@ -17,6 +18,7 @@ import useStyle from '../../common/hooks/useStyle';
 import DatePickerField from '../../common/components/Forms/DateField';
 import { number2DIgits } from '../../utils';
 import Text from '../../common/components/Text';
+import SimpleModal from '../../common/components/SimpleModal';
 
 const CustomDateInput = forwardRef(({ value, onClick, ...rest }, ref) => {
   const { t } = useTranslation('signup');
@@ -53,6 +55,7 @@ function PaymentInfo() {
     exp_year: 0,
     cvc: 0,
   });
+  const [showModalCardError, setShowModalCardError] = useState(false);
 
   const isNotTrial = selectedPlanCheckoutData?.type !== 'TRIAL';
 
@@ -89,12 +92,20 @@ function PaymentInfo() {
       .required(t('validators.cvc-required')),
   });
 
+  const handleTryButton = () => {
+    setShowModalCardError(false);
+    setStateCard({});
+  };
   const handleSubmit = (actions, values) => {
     bc.payment().addCard(values)
-      .then((resp) => {
-        const data = resp.json();
+      .then(async (resp) => {
+        const data = await resp.json();
         console.log('addCard_RESP:::', resp);
         console.log('addCard_DATA:::', data);
+
+        if (data?.silent_code === undefined) {
+          setShowModalCardError(true);
+        }
 
         if (resp.status < 400 && resp.statusText === 'OK') {
           handlePayment()
@@ -103,15 +114,17 @@ function PaymentInfo() {
               actions.setSubmitting(false);
             });
         }
-        if (resp.status >= 400) {
+        if (resp.status >= 400 && data?.detail) {
           toast({
             position: 'top',
             title: t('alert-message:card-error'),
-            description: t('alert-message:card-error-description'),
+            description: data?.detail,
             status: 'error',
             duration: 7000,
             isClosable: true,
           });
+          setIsSubmitting(false);
+          actions.setSubmitting(false);
         }
       })
       .catch(() => {
@@ -130,6 +143,36 @@ function PaymentInfo() {
 
   return (
     <Box display="flex" gridGap="30px" flexDirection={{ base: 'column', md: 'row' }} position="relative">
+      <SimpleModal
+        title="Transaction Declined"
+        isOpen={showModalCardError}
+        onClose={() => setShowModalCardError(false)}
+        // alignItems="center"
+        borderRadius="17px"
+        maxWidth="xl"
+        bodyStyles={{
+          margin: '26px auto 16px auto',
+          padding: '0 10px',
+        }}
+      >
+        <Box display="flex" alignItems="center" flexDirection="column" gridGap="24px">
+          <Avatar
+            src="/static/images/sad-avatar.png"
+            width="80px"
+            height="80px"
+            objectFit="cover"
+          />
+          <Text fontSize="18px" textAlign="center" fontWeight={700} color={useColorModeValue('gray.700', 'gray.400')} style={{ textWrap: 'balance' }}>
+            Payment could not be procesesd, please try again or contact your bank.
+          </Text>
+          <Box display="flex" gridGap="24px">
+            <Button variant="outline" onClick={() => setShowModalCardError(false)}>close</Button>
+            <Button variant="default" onClick={handleTryButton}>
+              Try Again
+            </Button>
+          </Box>
+        </Box>
+      </SimpleModal>
       <Box background={backgroundColor} flex={0.5} p={{ base: '20px 22px', md: '14px 23px' }} height="100%" borderRadius="15px">
         <Box
           display="flex"

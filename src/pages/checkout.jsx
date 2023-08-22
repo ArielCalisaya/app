@@ -291,6 +291,14 @@ function Checkout() {
       {isPreloading && (
         <LoaderScreen />
       )}
+      {/* <Button
+        variant="default"
+        onClick={() => {
+          handleStep(3);
+        }}
+      >
+        {t('next-step')}
+      </Button> */}
       <ModalInfo
         headerStyles={{ textAlign: 'center' }}
         title={t('signup:alert-message.validate-email-title')}
