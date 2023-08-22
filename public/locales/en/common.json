@@ -128,6 +128,8 @@
   "select-all": "Select all",
   "each": "each",
   "payment": {
+    "transaction-failed-title": "Transaction failed",
+    "transaction-failed-description": "Payment could not be processed, please try again or contact your bank.",
     "pay-per-year": "Pay {{value}} year",
     "pay-per-quarter": "Pay {{value}} quarter",
     "pay-per-month": "Pay {{value}} month",
@@ -176,5 +178,6 @@
   "logout-and-switch-user": "Logout and switch user",
   "free": "Free",
   "login": "Login",
-  "privacy-policy": "Privacy policy"
+  "privacy-policy": "Privacy policy",
+  "try-again": "Try Again"
 }

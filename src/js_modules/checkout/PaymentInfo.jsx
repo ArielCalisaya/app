@@ -45,7 +45,7 @@ function PaymentInfo() {
   const toast = useToast();
 
   const {
-    state, setPaymentInfo, handlePayment, getPaymentText,
+    state, setPaymentInfo, resetPaymentInfo, handlePayment, getPaymentText,
   } = useSignup();
   const { paymentInfo, checkoutData, planProps, dateProps, selectedPlanCheckoutData } = state;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,6 +55,7 @@ function PaymentInfo() {
     exp_year: 0,
     cvc: 0,
   });
+  const [resetFormFunc, setResetFormFunc] = useState(null);
   const [showModalCardError, setShowModalCardError] = useState(false);
 
   const isNotTrial = selectedPlanCheckoutData?.type !== 'TRIAL';
@@ -93,15 +94,15 @@ function PaymentInfo() {
   });
 
   const handleTryButton = () => {
+    if (resetFormFunc) resetFormFunc();
     setShowModalCardError(false);
     setStateCard({});
+    resetPaymentInfo();
   };
   const handleSubmit = (actions, values) => {
     bc.payment().addCard(values)
       .then(async (resp) => {
         const data = await resp.json();
-        console.log('addCard_RESP:::', resp);
-        console.log('addCard_DATA:::', data);
 
         if (data?.silent_code === undefined) {
           setShowModalCardError(true);
@@ -144,7 +145,7 @@ function PaymentInfo() {
   return (
     <Box display="flex" gridGap="30px" flexDirection={{ base: 'column', md: 'row' }} position="relative">
       <SimpleModal
-        title="Transaction Declined"
+        title={t('common:payment.transaction-failed-title')}
         isOpen={showModalCardError}
         onClose={() => setShowModalCardError(false)}
         // alignItems="center"
@@ -168,14 +169,14 @@ function PaymentInfo() {
             objectFit="cover"
           />
           <Text fontSize="18px" textAlign="center" fontWeight={700} color={useColorModeValue('gray.700', 'gray.400')} style={{ textWrap: 'balance' }}>
-            Payment could not be procesesd, please try again or contact your bank.
+            {t('common:payment.transaction-failed-description')}
           </Text>
           <Box display="flex" gridGap="24px">
             <Button variant="outline" onClick={() => setShowModalCardError(false)}>
               {t('common:close')}
             </Button>
             <Button variant="default" onClick={handleTryButton}>
-              Try Again
+              {t('common:try-again')}
             </Button>
           </Box>
         </Box>
@@ -321,7 +322,7 @@ function PaymentInfo() {
           }}
           validationSchema={infoValidation}
         >
-          {() => (
+          {({ resetForm, isValid }) => (
             <Form
               style={{
                 display: 'flex',
@@ -397,7 +398,9 @@ function PaymentInfo() {
                   width="100%"
                   variant="default"
                   isLoading={isSubmitting}
+                  isDisabled={!isValid}
                   height="40px"
+                  onClick={setResetFormFunc(() => resetForm)}
                   mt="0"
                 >
                   {t('common:proceed-to-payment')}
@@ -408,12 +411,14 @@ function PaymentInfo() {
                   width="100%"
                   variant="outline"
                   borderColor="blue.200"
+                  isDisabled={!isValid}
                   isLoading={isSubmitting}
                   background={featuredBackground}
                   _hover={{ background: featuredBackground, opacity: 0.8 }}
                   _active={{ background: featuredBackground, opacity: 1 }}
                   color="blue.default"
                   height="40px"
+                  onClick={setResetFormFunc(() => resetForm)}
                   mt="0"
                 >
                   {t('common:start-free-trial')}

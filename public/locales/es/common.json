@@ -128,6 +128,8 @@
   "select-all": "Seleccionar todo",
   "each": "cada {{value}}",
   "payment": {
+    "transaction-failed-title": "La transacción falló",
+    "transaction-failed-description": "No se pudo procesar el pago, intente nuevamente o comuníquese con su banco.",
     "pay-per-year": "Pagar {{value}} año",
     "pay-per-quarter": "Pagar {{value}} trimestre",
     "pay-per-month": "Pay {{value}} mes",
@@ -176,5 +178,6 @@
   "logout-and-switch-user": "Cerrar sesión e iniciar como otro usuario",
   "free": "Gratis",
   "login": "Iniciar sesión",
-  "privacy-policy": "Política de privacidad"
+  "privacy-policy": "Política de privacidad",
+  "try-again": "Intentar otra vez"
 }
