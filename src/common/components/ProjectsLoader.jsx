@@ -42,6 +42,7 @@ function ProjectsLoader({ articles, itemsPerPage, renderItem, searchQuery, optio
           <link rel="next" href={`${pathname}?page=${currentPage + 1}`} />
         )}
       </Head>
+      {articles?.length}
       {currentArticles.length > 0 && (
         <InfiniteScroll
           data={currentArticles}

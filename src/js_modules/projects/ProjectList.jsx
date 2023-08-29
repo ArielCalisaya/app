@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import Masonry from 'react-masonry-css';
 import { forwardRef } from 'react';
-import { toCapitalize, unSlugify } from '../../utils/index';
+import { toCapitalize } from '../../utils/index';
 import Heading from '../../common/components/Heading';
 import Link from '../../common/components/NextChakraLink';
 import TagCapsule from '../../common/components/TagCapsule';
@@ -69,16 +69,16 @@ const ProjectList = forwardRef(({
   const contains = (project, selectedTechs) => {
     // search with title and slug
     const projectDifficulty = isOldDifficulty() ? project.difficulty?.toLowerCase() : getDifficultyPosition(project.difficulty?.toLowerCase());
-    const projectTitle = project.title?.toLowerCase() || unSlugify(project.slug);
+    // const projectTitle = project.title?.toLowerCase() || unSlugify(project.slug);
     if (
       typeof videoTutorials === 'boolean'
       && (withVideoQuery || videoTutorials === true)
       && !project.solution_video_url === true
     ) return false;
-    if (typeof query?.search === 'string' && !projectTitle.includes(query?.search)) return false;
+    // if (typeof query?.search === 'string' && !projectTitle.includes(query?.search)) return false;
     if (difficultyQuery && projectDifficulty !== difficultyQuery) return false;
     // Match checked technologies
-    const res = (techTagsQuery || selectedTechs.length > 0) ? (
+    const res = (techTagsQuery?.length > 0 || selectedTechs?.length > 0) ? (
       (techTagsQuery || selectedTechs).some((tech) => project.technologies.includes(tech))
     ) : true;
     return res;

@@ -28,6 +28,10 @@ export const getServerSideProps = async ({ locale, locales, query }) => {
   const currentLang = locale === 'en' ? 'us' : 'es';
   const lessons = []; // filtered lessons after removing repeated
   let arrLessons = []; // incoming lessons
+  const existsQueryPage = query.page && !query.search;
+  const limit = query.page ? contentPerPage : 2000;
+  const offset = query.page ? (query.page - 1) * contentPerPage : 0;
+
   const querys = parseQuerys({
     asset_type: 'LESSON,ARTICLE',
     visibility: 'PUBLIC',
@@ -35,13 +39,17 @@ export const getServerSideProps = async ({ locale, locales, query }) => {
     exclude_category: 'how-to,como',
     language: currentLang,
     academy: WHITE_LABEL_ACADEMY,
-    limit: query.page ? contentPerPage : 2000,
-    offset: query.page ? (query.page - 1) * contentPerPage : 0,
+    like: !existsQueryPage ? query.search : undefined,
+    limit: existsQueryPage ? limit : undefined,
+    offset: existsQueryPage ? offset : undefined,
   });
   const resp = await fetch(`${process.env.BREATHECODE_HOST}/v1/registry/asset${querys}`);
   const data = await resp.json();
 
-  arrLessons = Object.values(data?.results);
+  const results = data?.results?.length > 0 ? data?.results : data;
+
+  // console.log('endpoint:::', `${process.env.BREATHECODE_HOST}/v1/registry/asset${querys}`);
+  arrLessons = Object.values(results);
   if (resp.status !== undefined && resp.status >= 200 && resp.status < 400) {
     console.log(`SUCCESS: ${arrLessons.length} Lessons fetched for /lessons`);
   } else {
@@ -127,17 +135,21 @@ export const getServerSideProps = async ({ locale, locales, query }) => {
       },
 
       fallback: false,
-      count: data?.count,
+      count: data?.count || data?.length,
       lessons: lessons.filter((lesson) => lesson?.lang === currentLang).map(
         (l) => ({ ...l, difficulty: l.difficulty?.toLowerCase() || null }),
       ),
+      context: {
+        search: query?.search || null,
+        page: query?.page || null,
+      },
       technologyTags,
       difficulties: difficultiesSorted,
     },
   };
 };
 
-function Projects({ lessons, technologyTags, difficulties, count }) {
+function Projects({ lessons, technologyTags, difficulties, count, context }) {
   const { t } = useTranslation('lesson');
   const { filteredBy, setProjectFilters } = useFilter();
   const { technologies, difficulty, videoTutorials } = filteredBy.projectsOptions;
@@ -266,7 +278,7 @@ function Projects({ lessons, technologyTags, difficulties, count }) {
             articles={lessons}
             itemsPerPage={20}
             // renderItem={false}
-            searchQuery={search}
+            searchQuery={context?.search || search}
             options={{
               withoutImage: true,
               withoutDifficulty: true,
@@ -301,6 +313,10 @@ Projects.propTypes = {
   lessons: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.oneOfType([PropTypes.any]))).isRequired,
   difficulties: PropTypes.arrayOf(PropTypes.string).isRequired,
   count: PropTypes.number.isRequired,
+  context: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.any])),
+};
+Projects.defaultProps = {
+  context: {},
 };
 
 export default Projects;
