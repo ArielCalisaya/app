@@ -11,6 +11,7 @@ import validationSchema from './validationSchemas';
 import useAuth from '../../hooks/useAuth';
 import useStyle from '../../hooks/useStyle';
 import modifyEnv from '../../../../modifyEnv';
+import eventTracker from '../../services/eventTracker';
 
 function LogIn() {
   const { t } = useTranslation('login');
@@ -37,7 +38,11 @@ function LogIn() {
         login(values)
           .then((data) => {
             actions.setSubmitting(false);
-            if (data.status === 200) {
+            if (data?.user_id) {
+              eventTracker.login({
+                method: 'Email',
+                user_id: data?.user_id,
+              });
               toast({
                 position: 'top',
                 title: t('alert-message:welcome'),

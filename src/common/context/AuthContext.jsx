@@ -227,7 +227,7 @@ function AuthProvider({ children }) {
             localStorage.removeItem('redirect');
           }
         }
-        return response;
+        return responseData;
       }
       throw Error('Empty values');
     } catch (e) {
