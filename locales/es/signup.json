@@ -174,7 +174,7 @@
   "pricing": {
     "already-have-plan": "Ya lo tienes",
     "monthly-plans": [{
-      "slug": "basic",
+      "plan_slug": "basic",
       "plan_id": "p-0-trial",
       "title": "Basic",
       "currency": {"code": "USD", "name": "US Dollar"},
@@ -188,7 +188,7 @@
       "planType": "original",
       "type": "FREE"
     },{
-      "slug": "with-feedback",
+      "plan_slug": "with-feedback",
       "plan_id": "p-50",
       "title": "Monthly payment",
       "currency": {"code": "USD", "name": "US Dollar"},
@@ -196,6 +196,7 @@
       "trial_duration_unit": "MONTH",
       "price": 50,
       "price_text": "$50",
+      "discount_text": "$60",
       "period": "MONTH",
       "period_label": "Al mes",
       "isFree": false,
@@ -203,7 +204,7 @@
       "type": "PAYMENT"
     }],
     "yearly-plans": [{
-      "slug": "basic",
+      "plan_slug": "basic",
       "plan_id": "p-0-trial",
       "title": "Basic",
       "currency": {"code": "USD", "name": "US Dollar"},
@@ -217,16 +218,16 @@
       "planType": "original",
       "type": "FREE"
     },{
-      "slug": "with-feedback",
+      "plan_slug": "with-feedback",
       "plan_id": "p-580",
       "title": "Yearly payment",
       "currency": {"code": "USD", "name": "US Dollar"},
       "trial_duration": 0,
       "trial_duration_unit": "MONTH",
       "price": 580,
-      "price_text": "$580",
+      "price_text": "$48.33",
       "period": "YEAR",
-      "period_label": "$48.33 Al mes",
+      "period_label": "Al mes",
       "isFree": false,
       "planType": "suggested",
       "type": "PAYMENT"
