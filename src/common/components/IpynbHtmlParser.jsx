@@ -4,7 +4,6 @@ import parse from 'html-react-parser';
 import katex from 'katex';
 import { Box } from '@chakra-ui/react';
 import 'katex/dist/katex.min.css';
-import '../../../styles/ipynb.css';
 
 function replace(node) {
   if (node.type === 'text' && node.data) {
