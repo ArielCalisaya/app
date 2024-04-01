@@ -10,6 +10,8 @@ import rehypeRaw from 'rehype-raw';
 import { Img } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
 import AnchorJS from 'anchor-js';
+import '../../../../styles/markdown.css';
+
 import bc from '../../services/breathecode';
 
 // import { useRouter } from 'next/router';

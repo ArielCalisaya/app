@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { Box, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { Field } from 'formik';
+import '../../../../styles/phoneInput/index.css';
 import countriesList from './countriesList.json';
 // import { Colors } from '../../Styling';
 

@@ -23,10 +23,7 @@ import InterceptionLoader from '../common/components/InterceptionLoader';
 
 import '../../styles/globals.css';
 import '../../styles/react-tags-input.css';
-import '../../styles/markdown.css';
-import '../../styles/phoneInput/index.css';
 import '../../styles/datePicker.css';
-import '../../styles/ipynb.css';
 
 import '@fontsource/lato/100.css';
 import '@fontsource/lato/300.css';
