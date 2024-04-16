@@ -338,6 +338,9 @@ function adjustNumberBeetwenMinMax({ number = 1, min = 1, max = 10 }) {
   }
   return number;
 }
+function randomNumberBeetwenMinMax({ min = 1, max = 10 }) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 function getDiscountedPrice({ numItems, maxItems, discountRatio, bundleSize, pricePerUnit, startDiscountFrom = 0 }) {
   if (numItems > maxItems) {
@@ -411,5 +414,5 @@ export {
   resizeAllMasonryItems, calcSVGViewBox, number2DIgits, getNextDateInMonths,
   sortToNearestTodayDate, isNumber, isDateMoreThanAnyDaysAgo, getQueryString, isValidDate,
   createArray, url, lengthOfString, syncInterval, getBrowserSize, calculateDifferenceDays, capitalizeFirstLetter,
-  adjustNumberBeetwenMinMax, getDiscountedPrice, formatPrice, cleanObject, slugToTitle, decodeBase64,
+  adjustNumberBeetwenMinMax, getDiscountedPrice, formatPrice, cleanObject, slugToTitle, decodeBase64, randomNumberBeetwenMinMax,
 };

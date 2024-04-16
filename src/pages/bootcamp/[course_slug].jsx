@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { Box, Button, Flex, Image, Link, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Link, SkeletonText, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -32,6 +32,7 @@ import axiosInstance from '../../axios';
 import { usePersistent } from '../../common/hooks/usePersistent';
 import { reportDatalayer } from '../../utils/requests';
 import MktTwoColumnSideImage from '../../common/components/MktTwoColumnSideImage';
+import { AvatarSkeletonWrapped } from '../../common/components/Skeleton';
 
 export async function getStaticPaths({ locales }) {
   const mktQueryString = parseQuerys({
@@ -105,6 +106,7 @@ function Page({ data }) {
   const [relatedSubscription, setRelatedSubscription] = useState(null);
   const [cohortData, setCohortData] = useState({});
   const [planData, setPlanData] = useState({});
+  const [isInitialDataLoading, setIsInitialDataLoading] = useState(false);
   const { t, lang } = useTranslation('course');
   const router = useRouter();
   const faqList = t('faq', {}, { returnObjects: true }) || [];
@@ -339,8 +341,12 @@ function Page({ data }) {
     setPlanData(formatedPlanData);
   };
   useEffect(() => {
-    getInitialData();
-  }, [router]);
+    setIsInitialDataLoading(true);
+    getInitialData()
+      .finally(() => {
+        setIsInitialDataLoading(false);
+      });
+  }, [router.pathname]);
   useEffect(() => {
     if (isAuthenticated) {
       getAllMySubscriptions().then((subscriptions) => {
@@ -419,30 +425,40 @@ function Page({ data }) {
             {/* Students count */}
             <Flex alignItems="center" gridGap="16px">
               <Flex>
-                {students.slice(0, limitViewStudents).map((student, index) => {
-                  const existsAvatar = student.user.profile?.avatar_url;
-                  const avatarNumber = adjustNumberBeetwenMinMax({
-                    number: student.user?.id,
-                    min: 1,
-                    max: 20,
-                  });
-                  return (
-                    <Image
-                      key={student.user?.profile?.full_name}
-                      margin={index < (limitViewStudents - 1) ? '0 -21px 0 0' : '0'}
-                      src={existsAvatar || `${BREATHECODE_HOST}/static/img/avatar-${avatarNumber}.png`}
-                      width="40px"
-                      height="40px"
-                      borderRadius="50%"
-                      objectFit="cover"
-                      alt={`Picture of ${student?.user?.first_name}`}
-                    />
-                  );
-                })}
+                {isInitialDataLoading ? (
+                  <AvatarSkeletonWrapped quantity={limitViewStudents} spacing="-20px" />
+                ) : (
+                  <>
+                    {students.slice(0, limitViewStudents).map((student, index) => {
+                      const existsAvatar = student.user.profile?.avatar_url;
+                      const avatarNumber = adjustNumberBeetwenMinMax({
+                        number: student.user?.id,
+                        min: 1,
+                        max: 20,
+                      });
+                      return (
+                        <Image
+                          key={student.user?.profile?.full_name}
+                          margin={index < (limitViewStudents - 1) ? '0 -21px 0 0' : '0'}
+                          src={existsAvatar || `${BREATHECODE_HOST}/static/img/avatar-${avatarNumber}.png`}
+                          width="40px"
+                          height="40px"
+                          borderRadius="50%"
+                          objectFit="cover"
+                          alt={`Picture of ${student?.user?.first_name}`}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </Flex>
-              <Text size="16px" color="currentColor" fontWeight={400}>
-                {students.length > limitViewStudents ? t('students-enrolled-count', { count: students.length - limitViewStudents }) : ''}
-              </Text>
+              {isInitialDataLoading ? (
+                <SkeletonText width="14%" noOfLines={1} />
+              ) : (
+                <Text size="16px" color="currentColor" fontWeight={400}>
+                  {students.length > limitViewStudents ? t('students-enrolled-count', { count: students.length - limitViewStudents }) : ''}
+                </Text>
+              )}
             </Flex>
 
             <Flex flexDirection="column" gridGap="24px">
@@ -528,7 +544,7 @@ function Page({ data }) {
                       <>
                         <Button
                           variant="default"
-                          isLoading={!firstPaymentPlan?.price}
+                          isLoading={isInitialDataLoading || !firstPaymentPlan?.price}
                           background="green.400"
                           color="white"
                           onClick={() => {

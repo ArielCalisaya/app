@@ -3,6 +3,7 @@ import {
   Grid, Box, SkeletonText, Skeleton, useColorModeValue, SkeletonCircle, Flex, AvatarGroup,
 } from '@chakra-ui/react';
 import useStyle from '../hooks/useStyle';
+import { randomNumberBeetwenMinMax } from '../../utils';
 
 export function MDSkeleton() {
   const commonStartColor = useColorModeValue('gray.300', 'gray.700');
@@ -172,7 +173,22 @@ export function ModuleMapSkeleton() {
     </Box>
   );
 }
-
+export function BulletsSkeleton({ quantity, withCircle, ...rest }) {
+  return (
+    <>
+      {Array(quantity).fill('l').map((_, i) => {
+        const index = i;
+        const widthNumber = randomNumberBeetwenMinMax({ min: 30, max: 85 });
+        return (
+          <Flex key={index} gridGap="9px" alignItems="center" {...rest}>
+            {withCircle && <SkeletonCircle width="14px" height="14px" />}
+            <SkeletonText width={`${widthNumber}%`} noOfLines={1} borderRadius="6px" />
+          </Flex>
+        );
+      })}
+    </>
+  );
+}
 export function CardSkeleton({
   withoutContainer, quantity, templateColumns, gridGap, cardWidth, cardHeight,
   cardRadius, ...rest
@@ -417,4 +433,13 @@ AvatarSkeletonWrapped.propTypes = {
 };
 AvatarSkeletonWrapped.defaultProps = {
   quantity: 3,
+};
+
+BulletsSkeleton.propTypes = {
+  quantity: PropTypes.number,
+  withCircle: PropTypes.bool,
+};
+BulletsSkeleton.defaultProps = {
+  quantity: 3,
+  withCircle: false,
 };
