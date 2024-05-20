@@ -59,13 +59,13 @@ function ChooseProgram({ chooseList, handleChoose, setLateModalProps }) {
     return false;
   }) : [];
 
-  const marketingCourses = marketingCursesList && marketingCursesList.filter(
+  const marketingCourses = marketingCursesList?.length > 0 ? marketingCursesList.filter(
     (item) => !activeSubscriptionCohorts.some(
       (activeCohort) => activeCohort?.all_subscriptions?.some(
         (sb) => sb?.selected_cohort_set?.slug === item?.slug,
       ),
     ) && item?.course_translation?.title,
-  );
+  ) : [];
 
   const isNotAvailableForMktCourses = activeSubscriptionCohorts.length > 0 && activeSubscriptionCohorts.some(
     (item) => item?.cohort?.available_as_saas === false,
@@ -135,7 +135,7 @@ function ChooseProgram({ chooseList, handleChoose, setLateModalProps }) {
                 icon="coding"
                 iconLink={item?.icon_url}
                 iconBackground="blue.default"
-                handleChoose={() => router.push(`/${item?.slug}`)}
+                handleChoose={() => router.push(item?.course_translation?.landing_url)}
                 programName={item?.course_translation.title}
                 programDescription={item?.course_translation?.description}
                 bullets={item?.course_translation?.course_modules}

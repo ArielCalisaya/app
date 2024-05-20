@@ -8,14 +8,15 @@ import {
   NEXT_STEP, PREV_STEP, HANDLE_STEP, SET_DATE_PROPS, SET_CHECKOUT_DATA, SET_LOCATION, SET_PAYMENT_INFO,
   SET_PLAN_DATA, SET_LOADER, SET_PLAN_CHECKOUT_DATA, SET_PLAN_PROPS, SET_COHORT_PLANS, TOGGLE_IF_ENROLLED, PREPARING_FOR_COHORT, SET_SERVICE_PROPS, SET_SELECTED_SERVICE,
 } from '../types';
-import { formatPrice, getDiscountedPrice, getNextDateInMonths, getStorageItem, getTimeProps, toCapitalize, unSlugify } from '../../../utils';
+import { formatPrice, getDiscountedPrice, getNextDateInMonths, getQueryString, getStorageItem, getTimeProps } from '../../../utils';
 import bc from '../../services/breathecode';
 import modifyEnv from '../../../../modifyEnv';
 import { usePersistent } from '../../hooks/usePersistent';
 import { reportDatalayer } from '../../../utils/requests';
+import { generatePlan, getTranslations } from '../../handlers/subscriptions';
 
 // eslint-disable-next-line no-unused-vars
-const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
+const useSignup = () => {
   const state = useSelector((sl) => sl.signupReducer);
   const [, setSubscriptionProcess] = usePersistent('subscription-process', null);
   const { t } = useTranslation('signup');
@@ -26,6 +27,8 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
   const accessToken = getStorageItem('accessToken');
   const redirect = getStorageItem('redirect');
   const redirectedFrom = getStorageItem('redirected-from');
+  const couponsQuery = getQueryString('coupons');
+  const planTranslationsObj = getTranslations(t);
   const BREATHECODE_HOST = modifyEnv({ queryString: 'host', env: process.env.BREATHECODE_HOST });
 
   const { syllabus, academy } = router.query;
@@ -111,26 +114,8 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     payload,
   });
 
-  const freeTrialPeriod = (qty, period) => {
-    const periodValue = period?.toLowerCase();
-    const singularTranslation = {
-      day: t('common:word-connector.day'),
-      week: t('common:word-connector.week'),
-      month: t('common:word-connector.month'),
-      year: t('common:word-connector.year'),
-    };
-    const pluralTranslation = {
-      day: t('common:word-connector.days'),
-      week: t('common:word-connector.weeks'),
-      month: t('common:word-connector.months'),
-      year: t('common:word-connector.years'),
-    };
-    const periodText = qty > 1 ? pluralTranslation[periodValue] : singularTranslation[periodValue];
-    return t('signup:info.free-trial-period', { qty, period: periodText });
-  };
-
   const handlePayment = (data, disableRedirects = false) => new Promise((resolve, reject) => {
-    const manyInstallmentsExists = selectedPlanCheckoutData?.financing_options?.length > 0 && selectedPlanCheckoutData?.period === 'FINANCING';
+    const manyInstallmentsExists = selectedPlanCheckoutData?.how_many_months > 0 || selectedPlanCheckoutData?.period === 'FINANCING';
     const isTtrial = ['FREE', 'TRIAL'].includes(selectedPlanCheckoutData?.type);
 
     const getRequests = () => {
@@ -140,6 +125,7 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
           token: data?.token || checkoutData.token,
           how_many_installments: data?.installments || selectedPlanCheckoutData?.how_many_months || undefined,
           chosen_period: manyInstallmentsExists ? undefined : (selectedPlanCheckoutData?.period || 'HALF'),
+          coupons: checkoutData?.discountCoupon?.slug ? [checkoutData.discountCoupon.slug] : undefined,
         };
       }
       return {
@@ -222,6 +208,7 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
       academy: cohortData?.academy?.id || dateProps?.academy?.id || (Number(academy) || undefined),
       syllabus,
       plans: [selectedPlan?.slug || (cohortPlans?.length > 0 ? cohortPlan?.slug : undefined)],
+      coupons: couponsQuery ? [couponsQuery] : undefined,
     };
 
     fetch(`${BREATHECODE_HOST}/v1/payments/checking`, {
@@ -234,106 +221,20 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     })
       .then(async (response) => {
         const data = await response.json();
-
-        const existsAmountPerHalf = data?.amount_per_half > 0;
-        const existsAmountPerMonth = data?.amount_per_month > 0;
-        const existsAmountPerQuarter = data?.amount_per_quarter > 0;
-        const existsAmountPerYear = data?.amount_per_year > 0;
         const currentPlan = data?.plans?.[0];
-
-        const isNotTrial = existsAmountPerHalf || existsAmountPerMonth || existsAmountPerQuarter || existsAmountPerYear;
-        const financingOptionsExists = currentPlan?.financing_options?.length > 0;
-        const singlePlan = data?.plans?.length > 0 ? data?.plans[0] : data;
-        const isTotallyFree = !isNotTrial && singlePlan?.trial_duration === 0;
-
-        const financingOptions = financingOptionsExists
-          ? currentPlan?.financing_options
-            .filter((l) => l?.monthly_price > 0)
-            .sort((a, b) => a?.monthly_price - b?.monthly_price)
-          : [];
-
-        const trialPlan = (!financingOptionsExists && !isNotTrial) ? {
-          ...singlePlan,
-          title: singlePlan?.title ? singlePlan?.title : toCapitalize(unSlugify(String(singlePlan?.slug))),
-          price: 0,
-          priceText: isTotallyFree ? t('free') : t('free_trial'),
-          plan_id: `p-${singlePlan?.trial_duration}-trial`,
-          period: isTotallyFree ? 'FREE' : singlePlan?.trial_duration_unit,
-          period_label: isTotallyFree
-            ? t('totally_free')
-            : freeTrialPeriod(singlePlan?.trial_duration, singlePlan?.trial_duration_unit),
-          type: isTotallyFree ? 'FREE' : 'TRIAL',
-        } : {};
-
-        const monthPlan = existsAmountPerMonth ? {
-          ...singlePlan,
-          title: singlePlan?.title ? singlePlan?.title : t('monthly_payment'),
-          price: data?.amount_per_month,
-          priceText: `$${data?.amount_per_month}`,
-          plan_id: `p-${data?.amount_per_month}`,
-          period: 'MONTH',
-          period_label: t('monthly'),
-          type: 'PAYMENT',
-        } : {};
-        const quarterPlan = existsAmountPerQuarter ? {
-          ...singlePlan,
-          title: singlePlan?.title ? singlePlan?.title : t('quarterly_payment'),
-          price: data?.amount_per_quarter,
-          priceText: `$${data?.amount_per_quarter}`,
-          plan_id: `p-${data?.amount_per_quarter}`,
-          period: 'QUARTER',
-          period_label: t('quarterly'),
-          type: 'PAYMENT',
-        } : {};
-        const halfPlan = existsAmountPerHalf ? {
-          ...singlePlan,
-          title: singlePlan?.title ? singlePlan?.title : t('half_yearly_payment'),
-          price: data?.amount_per_half,
-          priceText: `$${data?.amount_per_half}`,
-          plan_id: `p-${data?.amount_per_half}`,
-          period: 'HALF',
-          period_label: t('half_yearly'),
-          type: 'PAYMENT',
-        } : {};
-
-        const yearPlan = existsAmountPerYear ? {
-          ...singlePlan,
-          title: singlePlan?.title ? singlePlan?.title : t('yearly_payment'),
-          price: data?.amount_per_year,
-          priceText: `$${data?.amount_per_year}`,
-          plan_id: `p-${data?.amount_per_year}`,
-          period: 'YEAR',
-          period_label: t('yearly'),
-          type: 'PAYMENT',
-        } : {};
-
-        const financingOption = financingOptionsExists ? financingOptions.map((item, index) => {
-          const financingTitle = item?.how_many_months === 1 ? t('one_payment') : t('many_months_payment', { qty: item?.how_many_months });
-
-          return ({
-            ...singlePlan,
-            financingId: index + 1,
-            title: singlePlan?.title ? singlePlan?.title : financingTitle,
-            price: item?.monthly_price,
-            priceText: `$${item?.monthly_price} x ${item?.how_many_months}`,
-            plan_id: `f-${item?.monthly_price}-${item?.how_many_months}`,
-            period: 'FINANCING',
-            period_label: t('financing'),
-            how_many_months: item?.how_many_months,
-            type: 'PAYMENT',
-          });
-        }) : [{}];
-
-        const planList = [trialPlan, monthPlan, quarterPlan, halfPlan, yearPlan, ...financingOption].filter((plan) => Object.keys(plan).length > 0);
-        const finalData = {
-          ...data,
-          isTrial: !isNotTrial && !financingOptionsExists,
-          plans: planList,
-        };
+        const planSlug = encodeURIComponent(currentPlan?.slug);
+        const finalData = await generatePlan(planSlug, planTranslationsObj).then((respData) => respData);
+        setPlanProps(finalData?.featured_info);
 
         if (response.status < 400) {
-          setCheckoutData(finalData);
-          resolve(finalData);
+          setCheckoutData({
+            ...data,
+            ...finalData,
+          });
+          resolve({
+            ...data,
+            ...finalData,
+          });
         }
         if (response.status >= 400) {
           reject(response);
@@ -396,11 +297,11 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     getChecking(cohortData)
       .then((data) => {
         resolve(data);
-        // handleStep(1);
       })
       .catch((err) => {
         reject(err);
         if (err?.status === 400) {
+          handleStep(1);
           toggleIfEnrolled(true);
         } else {
           toast({
@@ -419,10 +320,11 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
     const period = selectedPlanCheckoutData?.period;
     if (planIsNotTrial) {
       if (period === 'FINANCING') {
+        const totalAmount = selectedPlanCheckoutData?.price * selectedPlanCheckoutData?.how_many_months;
         return t('info.will-pay-month', {
           price: selectedPlanCheckoutData?.price,
           qty_months: selectedPlanCheckoutData?.how_many_months,
-          total_amount: selectedPlanCheckoutData?.price * selectedPlanCheckoutData?.how_many_months,
+          total_amount: Math.round(totalAmount * 100) / 100,
         });
       }
       if (
@@ -430,10 +332,11 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
         && selectedPlanCheckoutData?.financing_options[0]?.monthly_price > 0
         && selectedPlanCheckoutData?.financing_options[0]?.how_many_months === 1
       ) {
+        const totalAmount = selectedPlanCheckoutData?.financing_options[0]?.monthly_price * selectedPlanCheckoutData?.financing_options[0]?.how_many_months;
         return t('info.will-pay-month', {
           price: selectedPlanCheckoutData?.financing_options[0]?.monthly_price,
           qty_months: selectedPlanCheckoutData?.financing_options[0]?.how_many_months,
-          total_amount: selectedPlanCheckoutData?.financing_options[0]?.monthly_price * selectedPlanCheckoutData?.financing_options[0]?.how_many_months,
+          total_amount: Math.round(totalAmount * 100) / 100,
         });
       }
       if (
@@ -441,10 +344,11 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
         && selectedPlanCheckoutData?.financing_options[0]?.monthly_price > 0
         && selectedPlanCheckoutData?.financing_options[0]?.how_many_months > 0
       ) {
+        const totalAmount = selectedPlanCheckoutData?.financing_options[0]?.monthly_price * selectedPlanCheckoutData?.financing_options[0]?.how_many_months;
         return t('info.will-pay-monthly', {
           price: selectedPlanCheckoutData?.financing_options[0]?.monthly_price,
           qty_months: selectedPlanCheckoutData?.financing_options[0]?.how_many_months,
-          total_amount: selectedPlanCheckoutData?.financing_options[0]?.monthly_price * selectedPlanCheckoutData?.financing_options[0]?.how_many_months,
+          total_amount: Math.round(totalAmount * 100) / 100,
           next_month: nextMonthText,
         });
       }
@@ -455,17 +359,20 @@ const useSignup = ({ disableRedirectAfterSuccess = false } = {}) => {
         && selectedPlanCheckoutData?.financing_options[0]?.how_many_months === 0
       ) return t('info.will-pay-now', { price: selectedPlanCheckoutData?.financing_options[0]?.monthly_price });
 
-      if (selectedPlanCheckoutData?.period === 'MONTH') {
+      if (period === 'MONTH') {
         return t('info.will-pay-per-month', { price: selectedPlanCheckoutData?.price });
       }
-      if (selectedPlanCheckoutData?.period === 'QUARTER') {
+      if (period === 'QUARTER') {
         return t('info.will-pay-per-quarter', { price: selectedPlanCheckoutData?.price });
       }
-      if (selectedPlanCheckoutData?.period === 'HALF') {
+      if (period === 'HALF') {
         return t('info.will-pay-per-half-year', { price: selectedPlanCheckoutData?.price });
       }
-      if (selectedPlanCheckoutData?.period === 'YEAR') {
+      if (period === 'YEAR') {
         return t('info.will-pay-per-year', { price: selectedPlanCheckoutData?.price });
+      }
+      if (period === 'ONE_TIME') {
+        return t('info.one-time-connector', { value: selectedPlanCheckoutData?.price });
       }
     }
 

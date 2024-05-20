@@ -5,10 +5,11 @@ import modifyEnv from '../../../modifyEnv';
 import { cleanObject } from '../../utils';
 
 const BREATHECODE_HOST = modifyEnv({ queryString: 'host', env: process.env.BREATHECODE_HOST });
+const RIGOBOT_HOST = modifyEnv({ queryString: 'rigo_host', env: process.env.RIGOBOT_HOST });
 const BC_ACADEMY_TOKEN = modifyEnv({ queryString: 'bc_token', env: process.env.BC_ACADEMY_TOKEN });
 const host = `${BREATHECODE_HOST}/v1`;
 const hostV2 = `${BREATHECODE_HOST}/v2`;
-const rigoHostV1 = 'https://rigobot.herokuapp.com/v1';
+const rigoHostV1 = `${RIGOBOT_HOST}/v1`;
 
 const breathecode = {
   get: (url, config) => fetch(url, {
@@ -51,7 +52,7 @@ const breathecode = {
           user_agent: 'bc/student',
         }),
       }),
-      verifyRigobotConnection: (token) => axios.get(`${rigoHostV1}/auth/me/token?breathecode_token=${token}`),
+      verifyRigobotConnection: (token) => breathecode.get(`${rigoHostV1}/auth/me/token?breathecode_token=${token}`),
       resendConfirmationEmail: (inviteId) => axios.put(`${url}/invite/resend/${inviteId}`),
       me: () => axios.get(`${url}/user/me`),
       updateProfile: (arg) => axios.put(`${url}/user/me`, { ...arg }),
@@ -302,15 +303,16 @@ const breathecode = {
     };
   },
 
-  public: (query = {}) => {
+  public: (query = {}, isQueryConnector = false) => {
     const url = `${host}/admissions/public`;
 
-    const qs = parseQuerys(query);
+    const qs = parseQuerys(query, isQueryConnector);
     return {
       mentors: () => axios.get(`${url}/cohort/user${qs}`),
       events: () => axios.get(`${host}/events/all${qs}`),
       singleEvent: (slug) => axios.get(`${host}/events/event/${slug}${qs}`),
       cohorts: () => axios.get(`${host}/admissions/cohort/all${qs}`),
+      syllabusMembers: (courseSyllabus) => axios.get(`${url}/cohort/user?syllabus=${courseSyllabus}${qs}`),
     };
   },
   payment: (query = {}) => {
@@ -328,6 +330,8 @@ const breathecode = {
       planOffer: () => axios.get(`${url}/planoffer${qs}`),
       getPlanProps: (id) => axios.get(`${url}/serviceitem?plan=${id}`),
       getCohortPlans: () => axios.get(`${url}/plan${qs}`),
+      applyCoupon: (bagId) => axios.put(`${url}/bag/${bagId}/coupon${qs}`),
+      verifyCoupon: () => axios.get(`${url}/coupon${qs}`),
       service: () => ({
         consumable: () => axios.get(`${url}/me/service/consumable${qs}`),
         // getAcademyService: (serviceSlug) => axios.get(`${url}/academy/academyservice/${serviceSlug}${qs}`),

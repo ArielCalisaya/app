@@ -55,41 +55,42 @@ function useHandler() {
       const { version } = user.active_cohort;
       const cohortSlug = user?.active_cohort?.slug || slug;
       const currentAcademy = user.roles.find((role) => role.academy.id === academyId);
+      if (currentAcademy) {
+        // Fetch cohortProgram and TaskTodo then apply to contextState (useModuleMap - action)
+        Promise.all([
+          bc.todo({ cohort: cohortSession.id, limit: 1000 }).getTaskByStudent(), // Tasks with cohort id
+          bc.syllabus().get(academyId, cohortSlug, version), // cohortProgram
+          bc.auth().getRoles(currentAcademy?.role), // Roles
+        ]).then((
+          [taskTodoData, programData, userRoles],
+        ) => {
+          const technologiesArray = programData.data.main_technologies
+            ? programData.data.main_technologies.split(',').map((el) => el.trim())
+            : [];
 
-      // Fetch cohortProgram and TaskTodo then apply to contextState (useModuleMap - action)
-      Promise.all([
-        bc.todo({ cohort: cohortSession.id }).getTaskByStudent(), // Tasks with cohort id
-        bc.syllabus().get(academyId, cohortSlug, version), // cohortProgram
-        bc.auth().getRoles(currentAcademy?.role), // Roles
-      ]).then((
-        [taskTodoData, programData, userRoles],
-      ) => {
-        const technologiesArray = programData.data.main_technologies
-          ? programData.data.main_technologies.split(',').map((el) => el.trim())
-          : [];
-
-        setCohortSession({
-          ...cohortSession,
-          main_technologies: technologiesArray,
-          academy_owner: programData.data.academy_owner,
-          bc_id: user.id,
-          user_capabilities: userRoles.data.capabilities,
+          setCohortSession({
+            ...cohortSession,
+            main_technologies: technologiesArray,
+            academy_owner: programData.data.academy_owner,
+            bc_id: user.id,
+            user_capabilities: userRoles.data.capabilities,
+          });
+          setContextState({
+            taskTodo: taskTodoData.data.results,
+            cohortProgram: programData.data,
+          });
+        }).catch((err) => {
+          toast({
+            position: 'top',
+            title: t('alert-message:error-fetching-role', { role: currentAcademy?.role }),
+            description: err.message,
+            status: 'error',
+            duration: 7000,
+            isClosable: true,
+          });
+          router.push('/choose-program');
         });
-        setContextState({
-          taskTodo: taskTodoData.data,
-          cohortProgram: programData.data,
-        });
-      }).catch((err) => {
-        toast({
-          position: 'top',
-          title: t('alert-message:error-fetching-role', { role: currentAcademy?.role }),
-          description: err.message,
-          status: 'error',
-          duration: 7000,
-          isClosable: true,
-        });
-        router.push('/choose-program');
-      });
+      }
     }
   };
 
@@ -118,7 +119,7 @@ function useHandler() {
         const currentCohort = findCohort?.cohort;
         const version = currentCohort?.syllabus_version?.version;
         const name = currentCohort?.syllabus_version?.name;
-        if (!cohortSession?.academy?.id || !currentCohort) {
+        if (assetSlug && (!cohortSession?.academy?.id || !currentCohort)) {
           handleRedirectToPublicPage();
         }
         if (currentCohort) {

@@ -24,13 +24,13 @@ import useAuth from '../../hooks/useAuth';
 import navbarTR from '../../translations/navbar';
 import LanguageSelector from '../LanguageSelector';
 import { isWindow } from '../../../utils';
-import { WHITE_LABEL_ACADEMY, BASE_PLAN } from '../../../utils/variables';
+import { WHITE_LABEL_ACADEMY } from '../../../utils/variables';
 import axios from '../../../axios';
 import modifyEnv from '../../../../modifyEnv';
 import logoData from '../../../../public/logo.json';
 import { parseQuerys } from '../../../utils/url';
 import useStyle from '../../hooks/useStyle';
-import UpgradeExperience from '../UpgradeExperience';
+// import UpgradeExperience from '../UpgradeExperience';
 import { getAllMySubscriptions } from '../../handlers/subscriptions';
 import bc from '../../services/breathecode';
 // import UpgradeExperience from '../UpgradeExperience';
@@ -126,7 +126,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
   useEffect(() => {
     axios.get(`${BREATHECODE_HOST}/v1/marketing/course${mktQueryString}`)
       .then((response) => {
-        const filterByTranslations = response?.data?.filter((item) => item?.course_translation !== null);
+        const filterByTranslations = response?.data?.filter((item) => item?.course_translation !== null && item?.visibility !== 'UNLISTED');
         const coursesStruct = filterByTranslations?.map((item) => ({
           ...item,
           slug: item?.slug,
@@ -147,7 +147,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [locale]);
 
   const coursesList = mktCourses?.length > 0 ? mktCourses : [];
 
@@ -179,23 +179,6 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
 
   if (pageProps?.previewMode) return null;
 
-  const logo = useColorModeValue(
-    <Image
-      src="/static/images/4geeks.png"
-      width={105}
-      height={35}
-      style={{
-        maxHeight: '35px',
-        minHeight: '35px',
-        objectFit: 'cover',
-      }}
-      alt="4Geeks logo"
-    />,
-    <Box padding="5px 5px">
-      <Icon icon="4Geeks-logo" width="95px" height="35px" />
-    </Box>,
-  );
-
   return (
     <Box position="relative" zIndex={100}>
       <Flex
@@ -209,7 +192,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
         borderStyle="solid"
         borderColor={isOpen ? borderColor : useColorModeValue('gray.200', 'gray.900')}
         justifyContent="space-between"
-        gridGap="2rem"
+        gridGap={{ base: '10px', md: '2rem' }}
         align="center"
       >
         <Flex
@@ -253,7 +236,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
                 }}
                 alt={logoData?.name ? `${logoData.name} logo` : '4Geeks logo'}
               />
-            ) : logo}
+            ) : <Icon icon="4Geeks-logo" secondColor={hexColor.black} width="95px" height="35px" />}
           </NextLink>
         </Flex>
 
@@ -275,7 +258,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
                 }}
                 alt={logoData?.name ? `${logoData.name} logo` : '4Geeks logo'}
               />
-            ) : logo}
+            ) : <Icon icon="4Geeks-logo" secondColor={hexColor.black} width="95px" height="35px" />}
           </NextLink>
 
           <Flex display="flex" ml={10}>
@@ -284,7 +267,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
         </Flex>
 
         <Stack justify="flex-end" alignItems="center" direction="row" gridGap={hasPaidSubscription ? '16px' : '20px'}>
-          <Flex gridGap="18px">
+          <Flex display={{ base: 'none', md: 'flex' }} gridGap="18px">
             {disableLangSwitcher !== true && (
               <LanguageSelector display={{ base: 'none ', lg: 'block' }} translations={translations} minWidth="unset" />
             )}
@@ -318,9 +301,9 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
           <Box display={{ base: 'none', lg: 'inherit' }} height="35px" style={{ margin: 0 }}>
             <Divider orientation="vertical" borderColor={hexColor.fontColor3} opacity={0.5} />
           </Box>
-          {isAuthenticated && !hasPaidSubscription && (
+          {/* {isAuthenticated && !hasPaidSubscription && (
             <UpgradeExperience display={{ base: 'none', sm: 'flex' }} />
-          )}
+          )} */}
           {hasPaidSubscription && (
             <Box display="flex" alignItems="center" height="100%" zIndex={10}>
               <Icon icon="crown" width="20px" height="26px" color="" />
@@ -534,7 +517,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
               >
                 {t('login')}
               </NextChakraLink>
-              <Link variant="buttonDefault" href={`/checkout?plan=${BASE_PLAN}`}>
+              <Link variant="buttonDefault" href="/pricing">
                 {t('get-started')}
               </Link>
             </Box>

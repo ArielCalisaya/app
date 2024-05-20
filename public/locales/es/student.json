@@ -1,8 +1,11 @@
 {
-  "back-to": "Volver al Dashboard",
+  "back-to": "Volver a las asignaciones",
   "relevant-activities": "Actividades relevantes",
   "attendance": "Asistencia",
+  "workshops": "Workshops",
   "deliverables": "Entregables",
+  "no-workshops-attendance": "El estudiante no ha asistido a ningún taller todavía.",
+  "no-task": "Este ejercicio todavía no se ha iniciado",
   "deliverables-section": {
     "lessons": "Lecciones completadas",
     "projects": "Proyectos completados",
@@ -58,6 +61,10 @@
     "absent": "Ausente",
     "not-taken": "No fue tomada",
     "no-info": "Sin información"
+  },
+  "event-status": {
+    "event_checkin_assisted": "Asistencia al evento",
+    "event_checkin_created": "Reservación del evento"
   },
   "exercise-status": {
     "completed": "Marcado como completado",

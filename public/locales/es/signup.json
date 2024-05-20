@@ -12,11 +12,19 @@
     "read-more" :"Lee la ciencia detrás de esto.",
     "read-more-link": "https://4geeks.com/es/mastering-technical-knowledge"
   },
+  "discount-value-off": "{{value}} dto.",
+  "add": "Agregar",
+  "you-are-getting": "Estás obteniendo",
+  "plan-is-ready": "El plan está listo",
+  "payment-success": "Pago exitoso",
+  "payment-failed": "Pago fallido",
+  "discount-applied": "Descuento aplicado",
   "one_payment_description": "Acceso completo a todas las funciones durante la duración del curso.",
   "monthly_payment_description": "Acceso completo a todas las funciones durante la duración del curso.",
   "quarterly_payment_description": "Acceso completo a todas las funciones durante la duración del curso.",
   "half_yearly_payment_description": "Acceso completo a todas las funciones durante la duración del curso.",
   "yearly_payment_description": "Acceso completo a todas las funciones durante la duración del curso.",
+  "financing_many_months_description": "Pagarás ${{monthly_price}} durante {{many_months}} meses y obtendrás acceso completo a todas las funciones durante la duración del curso.",
   "what-includes": "¿Qué incluye?",
   "continue-learning": "Continuar aprendiendo",
   "switch-user-connector": "¿No eres {{name}}?",
@@ -104,6 +112,9 @@
     "trial": "Prueba por 1 mes",
     "trial-week": "Prueba por 1 semana",
     "monthly": "Mensual",
+    "one-time-payment": "un solo pago",
+    "one-time-connector": "Un solo pago de ${{value}} dólares",
+    "installments": "Cuotas",
     "quarterly": "Trimestral",
     "half-yearly": "Semestral",
     "yearly": "Anual",
@@ -149,7 +160,7 @@
   "mentorship-bundle-title": "Paquete de sesiones de tutoría",
   "event-bundle-title": "Paquete de acceso a eventos",
   "upgrade-a-plan": "Mejora un plan",
-  "take-me-there": "Llévame allí",
+  "take-me-there": "Comprar plan",
   "consumables": {
     "already-have-it": "Ya lo tienes",
     "consumable-event-not-available": "Este evento no está disponible para tu suscripción",
@@ -201,7 +212,7 @@
       "price_text": "Free",
       "period": "FREE",
       "period_label": "",
-      "isFree": true,
+      "isFreeTier": true,
       "planType": "original",
       "type": "FREE"
     },{
@@ -216,7 +227,7 @@
       "discount_text": "$150",
       "period": "MONTH",
       "period_label": "Al mes",
-      "isFree": false,
+      "isFreeTier": false,
       "planType": "suggested",
       "type": "PAYMENT"
     }],
@@ -231,7 +242,7 @@
       "price_text": "Free",
       "period": "FREE",
       "period_label": "",
-      "isFree": true,
+      "isFreeTier": true,
       "planType": "original",
       "type": "FREE"
     },{
@@ -245,13 +256,13 @@
       "price_text": "$15.99",
       "period": "YEAR",
       "period_label": "Al mes",
-      "isFree": false,
+      "isFreeTier": false,
       "planType": "suggested",
       "type": "PAYMENT"
     }],
     "basic-plan": {
       "type": "Vuela solo",
-      "hook-message": "Prepárate para conocer nuestra academia",
+      "hook-message": "Prueba la experiencia completa del bootcamp de forma gratuita y decide más tarde",
       "title": "Miembro Gratuito",
       "description": "Todo lo que necesitas para comenzar a aprender a programar",
       "button-title": "Comenzar gratis",
@@ -288,10 +299,10 @@
     },
     "premium-plan": {
       "type": "Premium",
-      "hook-message": "Mejora tus habilidades con desafíos adicionales y beneficios.",
+      "hook-message": "Aprende a tu propio ritmo con retroalimentación y eventos en vivo",
       "title": "Miembro Premium",
       "description": "Todo el contenido que necesitas para convertirte en un desarrollador contratado",
-      "button-title": "Obtener Premium",
+      "button-title": "Obtener Plan",
       "service_items": {
         "title": "Todo en Vuela Solo más...",
         "items": [{

@@ -1,8 +1,11 @@
 {
-  "back-to": "Back to Dashboard",
+  "back-to": "Back to assignments",
   "relevant-activities": "Relevant Activities",
   "attendance": "Attendance",
+  "workshops": "Workshops",
   "deliverables": "Deliverables",
+  "no-workshops-attendance": "Student has not attended to any workshops yet.",
+  "no-task": "This exercise does not have a task yet",
   "deliverables-section": {
     "lessons": "Lessons completed",
     "projects": "Projects completed",
@@ -58,6 +61,10 @@
     "absent": "Absent",
     "not-taken": "Not taken",
     "no-info": "No information"
+  },
+  "event-status": {
+    "event_checkin_assisted": "Event Attendance",
+    "event_checkin_created": "Event Registration"
   },
   "exercise-status": {
     "completed": "Marked as completed",

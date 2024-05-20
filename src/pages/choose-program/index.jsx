@@ -12,7 +12,7 @@ import bc from '../../common/services/breathecode';
 import useAuth from '../../common/hooks/useAuth';
 import Icon from '../../common/components/Icon';
 import Module from '../../common/components/Module';
-import { calculateDifferenceDays, getStorageItem, isPlural, removeStorageItem, setStorageItem, sortToNearestTodayDate, syncInterval } from '../../utils';
+import { calculateDifferenceDays, getStorageItem, isPlural, isValidDate, removeStorageItem, setStorageItem, sortToNearestTodayDate, syncInterval } from '../../utils';
 import { reportDatalayer } from '../../utils/requests';
 import Heading from '../../common/components/Heading';
 import { usePersistent } from '../../common/hooks/usePersistent';
@@ -28,7 +28,8 @@ import ReactPlayerV2 from '../../common/components/ReactPlayerV2';
 import useStyle from '../../common/hooks/useStyle';
 import SupportSidebar from '../../common/components/SupportSidebar';
 import axios from '../../axios';
-// import Feedback from '../../common/components/Feedback';
+import Feedback from '../../common/components/Feedback';
+import LanguageSelector from '../../common/components/LanguageSelector';
 
 export const getStaticProps = async ({ locale, locales }) => {
   const t = await getT(locale, 'choose-program');
@@ -63,7 +64,7 @@ function chooseProgram() {
   const [cohortTasks, setCohortTasks] = useState({});
   const [hasCohortWithAvailableAsSaas, setHasCohortWithAvailableAsSaas] = useState(false);
   const [isRevalidating, setIsRevalidating] = useState(false);
-  const [welcomeModal, setWelcomeModal] = useState(false);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const [lateModalProps, setLateModalProps] = useState({
     isOpen: false,
     data: [],
@@ -125,12 +126,13 @@ function chooseProgram() {
   const getServices = async (userRoles) => {
     if (userRoles?.length > 0) {
       const mentorshipPromises = await userRoles.map((role) => bc.mentorship({ academy: role?.academy?.id }, true).getService()
-        .then(({ data }) => {
+        .then((resp) => {
+          const data = resp?.data;
           if (data !== undefined && data.length > 0) {
             return data.map((service) => ({
               ...service,
               academy: {
-                id: userRoles?.[0]?.academy.id,
+                id: role?.academy.id,
                 available_as_saas: role?.academy?.available_as_saas,
               },
             }));
@@ -285,7 +287,11 @@ function chooseProgram() {
   useEffect(() => {
     bc.payment().events()
       .then(({ data }) => {
-        const eventsRemain = data.filter((l) => new Date(l?.ended_at || l?.ending_at) - new Date() > 0).slice(0, 3);
+        const eventsRemain = data?.length > 0 ? data.filter((l) => {
+          if (isValidDate(l?.ended_at)) return new Date(l?.ended_at) - new Date() > 0;
+          if (isValidDate(l?.ending_at)) return new Date(l?.ending_at) - new Date() > 0;
+          return false;
+        }).slice(0, 3) : [];
         setEvents(eventsRemain);
       });
 
@@ -293,13 +299,19 @@ function chooseProgram() {
       upcoming: true,
     }).liveClass()
       .then((res) => {
-        const sortDateToLiveClass = sortToNearestTodayDate(res?.data, TwelveHoursInMinutes);
+        const validatedEventList = res?.data?.length > 0
+          ? res?.data?.filter((l) => isValidDate(l?.starting_at) && isValidDate(l?.ending_at))
+          : [];
+        const sortDateToLiveClass = sortToNearestTodayDate(validatedEventList, TwelveHoursInMinutes);
         const existentLiveClasses = sortDateToLiveClass?.filter((l) => l?.hash && l?.starting_at && l?.ending_at);
         setLiveClasses(existentLiveClasses);
       });
     syncInterval(() => {
       setLiveClasses((prev) => {
-        const sortDateToLiveClass = sortToNearestTodayDate(prev, TwelveHoursInMinutes);
+        const validatedEventList = prev?.length > 0
+          ? prev?.filter((l) => isValidDate(l?.starting_at) && isValidDate(l?.ending_at))
+          : [];
+        const sortDateToLiveClass = sortToNearestTodayDate(validatedEventList, TwelveHoursInMinutes);
         const existentLiveClasses = sortDateToLiveClass?.filter((l) => l?.hash && l?.starting_at && l?.ending_at);
         return existentLiveClasses;
       });
@@ -310,7 +322,7 @@ function chooseProgram() {
     if (dataQuery?.date_joined) {
       const cohortUserDaysCalculated = calculateDifferenceDays(dataQuery?.date_joined);
       if (cohortUserDaysCalculated?.isRemainingToExpire === false && cohortUserDaysCalculated?.result <= 2) {
-        setWelcomeModal(true);
+        setIsWelcomeModalOpen(true);
       }
     }
   }, [dataQuery]);
@@ -370,8 +382,8 @@ function chooseProgram() {
   return (
     <Flex alignItems="center" flexDirection="row" mt="40px">
       <SimpleModal
-        isOpen={welcomeModal}
-        onClose={() => setWelcomeModal(false)}
+        isOpen={isWelcomeModalOpen}
+        onClose={() => setIsWelcomeModalOpen(false)}
         style={{ marginTop: '10vh' }}
         maxWidth="45rem"
         borderRadius="13px"
@@ -379,6 +391,20 @@ function chooseProgram() {
         title={t('dashboard:welcome-modal.title')}
         bodyStyles={{ padding: 0 }}
         closeOnOverlayClick={false}
+        leftButton={(
+          <Flex
+            position="absolute"
+            variant="unstyled"
+            top={5}
+            left={5}
+            alignItems="center"
+            justifyContent="center"
+            width="auto"
+            mb="1rem"
+          >
+            <LanguageSelector />
+          </Flex>
+        )}
       >
         <Box display="flex" flexDirection="column" gridGap="17px" padding="1.5rem 4%">
           <Text size="13px" textAlign="center" style={{ textWrap: 'balance' }}>
@@ -556,6 +582,7 @@ function chooseProgram() {
               mainClasses={liveClasses?.length > 0 ? liveClasses : []}
               otherEvents={events}
               margin="0 auto"
+              cohorts={dataQuery?.cohorts || []}
             />
           </Box>
           <Box zIndex={10}>
@@ -568,7 +595,7 @@ function chooseProgram() {
               />
             )}
           </Box>
-          {/* <Feedback /> */}
+          <Feedback />
 
           {dataQuery?.cohorts?.length > 0 && (
             <NextChakraLink
@@ -585,7 +612,7 @@ function chooseProgram() {
               justifyContent="space-between"
               borderColor={hexColor.borderColor}
             >
-              <Flex gridGap="30px">
+              <Flex gridGap="30px" alignItems="center">
                 <Icon icon="slack" width="20px" height="20px" />
                 <Text size="15px" fontWeight={700}>
                   {t('sidebar.join-our-community')}

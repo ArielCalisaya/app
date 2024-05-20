@@ -35,6 +35,8 @@ import DottedTimeline from '../../../../../common/components/DottedTimeline';
 import { DottedTimelineSkeleton, SimpleSkeleton } from '../../../../../common/components/Skeleton';
 import KPI from '../../../../../common/components/KPI';
 import Link from '../../../../../common/components/NextChakraLink';
+import { isWindow } from '../../../../../utils';
+import axiosInstance from '../../../../../axios';
 
 const activitiesTemplate = {
   invite_created: {
@@ -120,6 +122,7 @@ function StudentReport() {
   const [currentProject, setCurrentProject] = useState(null);
   const [cohortUsers, setCohortUsers] = useState([]);
   const [attendance, setAttendance] = useState([]);
+  const [events, setEvents] = useState([]);
   const [activities, setActivities] = useState([]);
   const [fetchMoreActivities, setFetchMoreActivities] = useState(true);
   const [isFetchingActivities, setIsFetchingActivities] = useState(true);
@@ -143,7 +146,7 @@ function StudentReport() {
 
   const { hexColor } = useStyle();
   const linkColor = useColorModeValue('blue.default', 'blue.300');
-  const borderColor = useColorModeValue('#E2E8F0', '#718096');
+  const borderColor = useColorModeValue('gray.200', 'gray.500');
   const activityLabelPrexif = 'activities-section.activities.';
   const lang = {
     es: '/es/',
@@ -151,6 +154,7 @@ function StudentReport() {
   };
 
   const activitiesLabels = t('activities-section.activities', {}, { returnObjects: true });
+  const eventsLabels = t('event-status', {}, { returnObjects: true });
   const activitiesOptions = Object.keys(activitiesLabels).map((act) => ({ label: activitiesLabels[act], value: act }));
   const limit = 10;
 
@@ -159,6 +163,11 @@ function StudentReport() {
     ABSENT: hexColor.danger,
     'NO-INFO': hexColor.yellowDefault,
     'NOT-TAKEN': hexColor.fontColor3,
+  };
+
+  const eventsStyles = {
+    event_checkin_assisted: hexColor.green,
+    event_checkin_created: hexColor.yellowDefault,
   };
 
   const getAttendanceStatus = (day) => {
@@ -186,6 +195,7 @@ function StudentReport() {
   };
 
   useEffect(() => {
+    axiosInstance.defaults.headers.common.academy = academy;
     bc.admissions({ users: studentId }).cohortUsers(academy)
       .then((res) => {
         setCohortUsers(res.data);
@@ -202,7 +212,8 @@ function StudentReport() {
   useEffect(() => {
     if (selectedCohortUser) {
       setIsFetching(true);
-      const mentorshipQueryObject = { filter: { user_id: selectedCohortUser.user.id, 'meta.cohort': selectedCohortUser.cohort.id }, grouping_function: { count: ['kind'], avg: ['meta.score'] } };
+      const npsQueryObject = { filter: { user_id: selectedCohortUser.user.id, 'meta.cohort': selectedCohortUser.cohort.id }, grouping_function: { count: ['kind'], avg: ['meta.score'] } };
+      const mentorshipsQueryObject = { filter: { user_id: selectedCohortUser.user.id, kind: 'mentorship_session_checkin' }, grouping_function: { count: ['kind'] } };
       const projectsQueryObject = {
         filter: {
           'meta.task_type': 'PROJECT',
@@ -212,6 +223,12 @@ function StudentReport() {
           'meta.cohort': selectedCohortUser.cohort.id,
         },
         grouping_function: { count: ['kind'] },
+      };
+      const eventsQueryObject = {
+        filter: {
+          user_id: selectedCohortUser.user.id,
+          kind__like: 'event_checkin%',
+        },
       };
       Promise.all([
         bc
@@ -226,8 +243,10 @@ function StudentReport() {
           })
           .getAssignments({ id: selectedCohortUser.cohort.id, academy }),
         bc.admissions().cohort(selectedCohortUser.cohort.slug, academy),
-        bc.activity({ query: JSON.stringify(mentorshipQueryObject), by: 'kind', fields: 'kind' }).getActivityReport(academy),
+        bc.activity({ query: JSON.stringify(npsQueryObject), by: 'kind', fields: 'kind' }).getActivityReport(academy),
         bc.activity({ query: JSON.stringify(projectsQueryObject), by: 'kind', fields: 'kind' }).getActivityReport(academy),
+        bc.activity({ query: JSON.stringify(eventsQueryObject), order: 'timestamp' }).getActivityReport(academy),
+        bc.activity({ query: JSON.stringify(mentorshipsQueryObject) }).getActivityReport(academy),
       ])
         .then(async (res) => {
           const currentDaysLog = res[0].data;
@@ -259,18 +278,29 @@ function StudentReport() {
               exercises,
             });
           }
-          const [,,, resMentorships, resProjects] = res;
+          const [,,, resNps, resProjects, resEvents, resMentorships] = res;
+
+          const processedEvents = resEvents.data.reduce((acum, elem) => {
+            const index = acum.findIndex((e) => e.meta.event_id === elem.meta.event_id);
+            if (index > -1) {
+              const copy = [...acum];
+              if (elem.kind === 'event_checkin_assisted') copy[index] = elem;
+              return copy;
+            }
+            return [...acum, elem];
+          }, []);
+          setEvents(processedEvents);
 
           const attendanceTaken = days.filter((day) => getAttendanceStatus(day) !== 'NOT-TAKEN');
           const attendancePresent = days.filter((day) => getAttendanceStatus(day) === 'ATTENDED');
-          const npsAnswered = resMentorships.data?.find((obj) => obj.kind === 'nps_answered')?.avg__meta__score;
+          const npsAnswered = resNps.data?.find((obj) => obj.kind === 'nps_answered')?.avg__meta__score;
 
           const attendancePercentage = (attendancePresent.length * 100) / attendanceTaken.length;
           setReport([{
             label: t('analitics.total-mentorships'),
             icon: 'book',
             variationColor: hexColor.blueDefault,
-            value: resMentorships.data?.find((obj) => obj.kind === 'mentoring_session_scheduled')?.count__kind,
+            value: resMentorships.data[0].count__kind,
           }, {
             label: t('analitics.projects-completed'),
             icon: 'bookClosed',
@@ -286,7 +316,7 @@ function StudentReport() {
             label: t('analitics.nps'),
             icon: 'smile',
             variationColor: hexColor.green,
-            value: (Math.round(npsAnswered * 100) / 100),
+            value: (Math.round(npsAnswered * 100) / 100) || '--',
             max: 10,
           }]);
 
@@ -362,6 +392,16 @@ function StudentReport() {
     );
     return { label, color: attendanceStyles[status] };
   });
+
+  const eventsDots = events?.length > 0 ? events.map((event) => {
+    const label = (
+      <>
+        <Text textAlign="center">{eventsLabels[event.kind]}</Text>
+        <Text textAlign="center">{event.meta.event_slug}</Text>
+      </>
+    );
+    return { label, color: eventsStyles[event.kind], event_slug: event.meta.event_slug };
+  }) : [];
 
   const lessonsDots = cohortAssignments.lessons.map((lesson) => {
     const studentLesson = studentAssignments.lessons.find((elem) => elem.associated_slug === lesson.slug);
@@ -468,6 +508,16 @@ function StudentReport() {
     setOpenFilter(false);
   };
 
+  const updpateAssignment = (taskUpdated) => {
+    const newStudentAssignments = studentAssignments.projects.map((project) => {
+      if (project.id === taskUpdated.id) {
+        return taskUpdated;
+      }
+      return project;
+    });
+    setStudentAssignments({ ...studentAssignments, projects: newStudentAssignments });
+  };
+
   return (
     <Box>
       <Box
@@ -477,7 +527,7 @@ function StudentReport() {
       >
         <Box display="flex" justifyContent="space-between">
           <Link
-            href={cohortSession?.selectedProgramSlug || '/choose-program'}
+            href={`/cohort/${cohortSlug}/assignments?academy=${academy}`}
             color={linkColor}
             display="inline-block"
             letterSpacing="0.05em"
@@ -558,25 +608,43 @@ function StudentReport() {
         padding="0 10px"
       >
         <Box width="100%" maxWidth="695px" marginTop="2%" overflow="hidden">
-          <Box marginBottom="20px" width="100%">
-            <Heading color={hexColor.fontColor2} size="m">{`${t('relevant-activities')}:`}</Heading>
-            <Box marginTop="20px">
-              <DottedTimeline
-                label={(
-                  <Flex gridGap="10px" alignItems="center">
-                    <Icon
-                      icon="list"
-                      color={hexColor.blueDefault}
-                      width="20px"
-                      height="20px"
-                    />
-                    <p>{t('attendance')}</p>
-                  </Flex>
-                )}
-                dots={attendanceDots}
-              />
+          {!isFetching && (
+            <Box marginBottom="20px" width="100%">
+              <Heading color={hexColor.fontColor2} size="m">{`${t('relevant-activities')}:`}</Heading>
+              <Box marginTop="20px" display="flex" flexDirection="column" gap="20px">
+                <DottedTimeline
+                  label={(
+                    <Flex gridGap="10px" alignItems="center">
+                      <Icon
+                        icon="list"
+                        color={hexColor.blueDefault}
+                        width="20px"
+                        height="20px"
+                      />
+                      <p>{t('attendance')}</p>
+                    </Flex>
+                  )}
+                  dots={attendanceDots}
+                />
+                <DottedTimeline
+                  label={(
+                    <Flex gridGap="10px" alignItems="center">
+                      <Icon
+                        icon="calendar"
+                        color={hexColor.blueDefault}
+                        width="20px"
+                        height="20px"
+                      />
+                      <p>{t('workshops')}</p>
+                    </Flex>
+                  )}
+                  emptyDotsMessage={t('no-workshops-attendance')}
+                  onClickDots={(dot) => isWindow && window.open(`/workshops/${dot.event_slug}`)}
+                  dots={eventsDots}
+                />
+              </Box>
             </Box>
-          </Box>
+          )}
           {isFetching ? (
             <DottedTimelineSkeleton />
           ) : (
@@ -629,6 +697,20 @@ function StudentReport() {
                     </Flex>
                   )}
                   dots={exerciseDots}
+                  onClickDots={(task) => {
+                    if (isWindow) {
+                      if (task.id) window.open(`/cohort/${cohortSlug}/student/${studentId}/assignment/${task.id}?academy=${academy}`);
+                      else {
+                        toast({
+                          position: 'top',
+                          title: t('no-task'),
+                          status: 'error',
+                          duration: 6000,
+                          isClosable: true,
+                        });
+                      }
+                    }
+                  }}
                 />
               </Box>
             </Box>
@@ -640,6 +722,7 @@ function StudentReport() {
             }project/${currentProject?.slug}`}
             isOpen={currentProject && currentProject.status === 'DELIVERED'}
             onClose={onCloseProject}
+            updpateAssignment={updpateAssignment}
             readOnly
           />
           <NoInfoModal
@@ -653,6 +736,7 @@ function StudentReport() {
             }project/${currentProject?.slug}`}
             isOpen={currentProject && (currentProject.status === 'UNDELIVERED' || currentProject.status === 'REJECTED')}
             onClose={onCloseProject}
+            updpateAssignment={updpateAssignment}
             deliveryUrl={deliveryUrl}
             readOnly
           />
@@ -663,6 +747,7 @@ function StudentReport() {
             }project/${currentProject?.slug}`}
             isOpen={currentProject && currentProject.status === 'APPROVED'}
             onClose={onCloseProject}
+            updpateAssignment={updpateAssignment}
             readOnly
           />
         </Box>

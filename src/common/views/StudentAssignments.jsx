@@ -83,14 +83,9 @@ const StudentsRows = forwardRef(({ currentStudentList, syllabusData, selectedCoh
       {currentStudentList.map((student) => {
         const { user } = student;
         const fullname = `${student.user.first_name} ${student.user.last_name}`;
+        const deliveredProjects = student.tasks.filter((task) => task.task_type === 'PROJECT' && task.task_status === 'DONE');
         const percentage = Math.round((student.tasks.reduce((acum, val) => (val.task_status !== 'PENDING' && val.task_type === 'PROJECT' ? acum + 1 : acum), 0) / syllabusData.assignments.length) * 100);
-        const lastDeliver = student.tasks.reduce((date, val) => {
-          if (val.task_type === 'PROJECT') {
-            if (date && date > val.delivered_at) return date;
-            return val.delivered_at;
-          }
-          return date;
-        }, null);
+        const lastProjectDelivery = deliveredProjects.sort((a, b) => new Date(b.delivered_at) - new Date(a.delivered_at))[0];
         const dots = syllabusData.assignments.map((elem) => {
           const studentTask = student.tasks.find((task) => task.associated_slug === elem.slug);
           const { mandatory } = elem;
@@ -104,9 +99,8 @@ const StudentsRows = forwardRef(({ currentStudentList, syllabusData, selectedCoh
           };
         });
         return (
-          <Box ref={ref || null}>
+          <Box key={student.id} ref={ref || null}>
             <DottedTimeline
-              key={student.id}
               onClickDots={showSingleTask}
               label={(
                 <Flex gridGap="10px" alignItems="center">
@@ -122,10 +116,10 @@ const StudentsRows = forwardRef(({ currentStudentList, syllabusData, selectedCoh
                     </p>
                     <small>{`${percentage}${t('delivered-percentage')}`}</small>
                     {/* <small>{lastDeliver ? t('last-deliver', { date: formatTimeString(new Date(lastDeliver)) }) : t('no-deliver')}</small> */}
-                    {lastDeliver && (
+                    {lastProjectDelivery?.delivered_at && (
                       <small>
                         {' - '}
-                        {t('last-deliver', { date: formatTimeString(new Date(lastDeliver)) })}
+                        {t('last-deliver', { date: formatTimeString(new Date(lastProjectDelivery.delivered_at)) })}
                       </small>
                     )}
                   </Box>
@@ -196,6 +190,7 @@ function StudentAssignments({ currentStudentList, updpateAssignment, syllabusDat
         updpateAssignment={updpateAssignment}
         isOpen={currentTask && (currentTask.status === 'DELIVERED' || currentTask.status === 'APPROVED')}
         onClose={() => setCurrentTask(null)}
+        externalFile={currentTask?.file}
       />
       <NoInfoModal
         isOpen={currentTask && !currentTask.status}

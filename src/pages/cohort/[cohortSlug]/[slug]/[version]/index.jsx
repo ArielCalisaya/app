@@ -15,6 +15,7 @@ import ReactPlayerV2 from '../../../../../common/components/ReactPlayerV2';
 import NextChakraLink from '../../../../../common/components/NextChakraLink';
 import TagCapsule from '../../../../../common/components/TagCapsule';
 import ModuleMap from '../../../../../js_modules/moduleMap/index';
+import Module from '../../../../../js_modules/moduleMap/module';
 import CohortSideBar from '../../../../../common/components/CohortSideBar';
 import Icon from '../../../../../common/components/Icon';
 import SupportSidebar from '../../../../../common/components/SupportSidebar';
@@ -31,7 +32,15 @@ import { nestAssignments } from '../../../../../common/hooks/useModuleHandler';
 import axios from '../../../../../axios';
 import { usePersistent } from '../../../../../common/hooks/usePersistent';
 import {
-  slugify, includesToLowerCase, getStorageItem, sortToNearestTodayDate, syncInterval, getBrowserSize, calculateDifferenceDays,
+  slugify,
+  includesToLowerCase,
+  getStorageItem,
+  sortToNearestTodayDate,
+  syncInterval,
+  getBrowserSize,
+  calculateDifferenceDays,
+  adjustNumberBeetwenMinMax,
+  isValidDate,
 } from '../../../../../utils/index';
 import { reportDatalayer } from '../../../../../utils/requests';
 import ModalInfo from '../../../../../js_modules/moduleMap/modalInfo';
@@ -43,7 +52,7 @@ import modifyEnv from '../../../../../../modifyEnv';
 import LiveEvent from '../../../../../common/components/LiveEvent';
 import FinalProject from '../../../../../common/components/FinalProject';
 import useStyle from '../../../../../common/hooks/useStyle';
-// import Feedback from '../../../../../common/components/Feedback';
+import Feedback from '../../../../../common/components/Feedback';
 
 function Dashboard() {
   const BREATHECODE_HOST = modifyEnv({ queryString: 'host', env: process.env.BREATHECODE_HOST });
@@ -63,15 +72,16 @@ function Dashboard() {
   const [showPendingTasks, setShowPendingTasks] = useState(false);
   const [events, setEvents] = useState(null);
   const [liveClasses, setLiveClasses] = useState([]);
-  const { featuredColor } = useStyle();
+  const { featuredColor, hexColor } = useStyle();
 
-  const { user, choose, isLoading, isAuthenticated } = useAuth();
+  const { user, choose, isAuthenticated } = useAuth();
 
   const isBelowTablet = getBrowserSize()?.width < 768;
   const [currentCohortProps, setCurrentCohortProps] = useState({});
   const [subscriptionData, setSubscriptionData] = useState(null);
   const [allSubscriptions, setAllSubscriptions] = useState(null);
   const [isAvailableToShowWarningModal, setIsAvailableToShowModalMessage] = useState(false);
+  const [showMandatoryModal, setShowMandatoryModal] = useState(false);
   const {
     cohortSession, sortedAssignments, taskCohortNull, getCohortAssignments, getCohortData, prepareTasks, getDailyModuleData,
     getMandatoryProjects, getTasksWithoutCohort, taskTodo, taskTodoState,
@@ -197,7 +207,11 @@ function Dashboard() {
     }
     bc.payment().events()
       .then(({ data }) => {
-        const eventsRemain = data.filter((l) => new Date(l?.ended_at || l?.ending_at) - new Date() > 0).slice(0, 3);
+        const eventsRemain = data?.length > 0 ? data.filter((l) => {
+          if (isValidDate(l?.ended_at)) return new Date(l?.ended_at) - new Date() > 0;
+          if (isValidDate(l?.ending_at)) return new Date(l?.ending_at) - new Date() > 0;
+          return false;
+        }).slice(0, 3) : [];
         setEvents(eventsRemain);
       });
 
@@ -206,7 +220,10 @@ function Dashboard() {
       cohort: cohortSlug,
     }).liveClass()
       .then((res) => {
-        const sortDateToLiveClass = sortToNearestTodayDate(res?.data, TwelveHours);
+        const validatedEventList = res?.data?.length > 0
+          ? res?.data?.filter((l) => isValidDate(l?.starting_at) && isValidDate(l?.ending_at))
+          : [];
+        const sortDateToLiveClass = sortToNearestTodayDate(validatedEventList, TwelveHours);
         const existentLiveClasses = sortDateToLiveClass?.filter((l) => l?.hash && l?.starting_at && l?.ending_at);
         setLiveClasses(existentLiveClasses);
       });
@@ -247,7 +264,10 @@ function Dashboard() {
       });
     syncInterval(() => {
       setLiveClasses((prev) => {
-        const sortDateToLiveClass = sortToNearestTodayDate(prev, TwelveHours);
+        const validatedEventList = prev?.length > 0
+          ? prev?.filter((l) => isValidDate(l?.starting_at) && isValidDate(l?.ending_at))
+          : [];
+        const sortDateToLiveClass = sortToNearestTodayDate(validatedEventList, TwelveHours);
         const existentLiveClasses = sortDateToLiveClass?.filter((l) => l?.hash && l?.starting_at && l?.ending_at);
         return existentLiveClasses;
       });
@@ -274,7 +294,23 @@ function Dashboard() {
       if (data && data.length > 0) {
         setSudentAndTeachers(data.sort(
           (a, b) => a.user.first_name.localeCompare(b.user.first_name),
-        ));
+        ).map((elem, index) => {
+          const avatarNumber = adjustNumberBeetwenMinMax({
+            number: index,
+            min: 1,
+            max: 20,
+          });
+          return {
+            ...elem,
+            user: {
+              ...elem.user,
+              profile: {
+                ...elem.user.profile,
+                avatar_url: elem?.user?.profile?.avatar_url || `${BREATHECODE_HOST}/static/img/avatar-${avatarNumber}.png`,
+              },
+            },
+          };
+        }));
       }
     }).catch(() => {
       toast({
@@ -289,12 +325,12 @@ function Dashboard() {
 
   // Fetch cohort assignments (lesson, exercise, project, quiz)
   useEffect(() => {
-    if (!isLoading) {
+    if (isAuthenticated) {
       getCohortAssignments({
         user, setContextState, slug,
       });
     }
-  }, [user]);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     getTasksWithoutCohort({ setModalIsOpen });
@@ -338,19 +374,39 @@ function Dashboard() {
         <AlertMessage
           full
           type="warning"
-          message={t('deliverProject.mandatory-message', { count: getMandatoryProjects().length })}
           style={{ borderRadius: '0px', justifyContent: 'center' }}
-        />
+        >
+          <Text
+            size="l"
+            color="black"
+            fontWeight="700"
+          >
+            {t('deliverProject.mandatory-message', { count: getMandatoryProjects().length })}
+            {'  '}
+            <Button
+              variant="link"
+              color="black"
+              textDecoration="underline"
+              fontWeight="700"
+              fontSize="15px"
+              height="20px"
+              onClick={() => setShowMandatoryModal(true)}
+              _active={{ color: 'black' }}
+            >
+              {t('deliverProject.see-mandatory-projects')}
+            </Button>
+          </Text>
+        </AlertMessage>
       )}
       {subscriptionData?.id && subscriptionData?.status === 'FREE_TRIAL' && subscriptionData?.planOfferExists && (
         <AlertMessage
           full
           type="warning"
-          message={t('deliverProject.mandatory-message', { count: getMandatoryProjects().length })}
           style={{ borderRadius: '0px', justifyContent: 'center' }}
         >
           <Text
             size="l"
+            color="black"
             dangerouslySetInnerHTML={{
               __html: t('free-trial-msg', { link: '/profile/subscriptions' }),
             }}
@@ -479,6 +535,7 @@ function Dashboard() {
                   featureReadMoreUrl={t('common:live-event.readMoreUrl')}
                   mainClasses={liveClasses?.length > 0 ? liveClasses : []}
                   otherEvents={events}
+                  cohorts={cohortSession ? [{ role: cohortSession.cohort_role, cohort: cohortSession }] : []}
                 />
                 {cohortSession?.stage === 'FINAL_PROJECT' && (
                   <FinalProject
@@ -633,7 +690,7 @@ function Dashboard() {
                         key={index}
                         userId={user?.id}
                         existsActivities={existsActivities}
-                        cohortSession={cohortSession}
+                        cohortData={currentCohortProps}
                         taskCohortNull={taskCohortNull}
                         contextState={contextState}
                         setContextState={setContextState}
@@ -710,6 +767,7 @@ function Dashboard() {
                 featureReadMoreUrl={t('common:live-event.readMoreUrl')}
                 mainClasses={liveClasses?.length > 0 ? liveClasses : []}
                 otherEvents={events}
+                cohorts={cohortSession ? [{ role: cohortSession.cohort_role, cohort: cohortSession }] : []}
               />
               {cohortSession?.stage === 'FINAL_PROJECT' && (
                 <FinalProject
@@ -739,7 +797,7 @@ function Dashboard() {
                   subscriptionData={subscriptionData}
                 />
               )}
-              {/* <Feedback /> */}
+              <Feedback />
             </Box>
           )}
         </Flex>
@@ -812,6 +870,38 @@ function Dashboard() {
           </ModalContent>
         </Modal>
       )}
+      {/* Mandatory projects modal */}
+      <Modal
+        isOpen={showMandatoryModal}
+        size="2xl"
+        margin="0 10px"
+        onClose={() => {
+          setShowMandatoryModal(false);
+        }}
+      >
+        <ModalOverlay />
+        <ModalContent style={{ margin: '3rem 0 0 0' }}>
+          <ModalHeader pb="0" fontSize="15px" textTransform="uppercase" borderColor={commonBorderColor}>
+            {t('mandatoryProjects.title')}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody padding={{ base: '15px 22px' }}>
+            <Text color={hexColor.fontColor3} fontSize="14px" lineHeight="24px" marginBottom="15px" fontWeight="400">
+              {t('mandatoryProjects.description')}
+            </Text>
+            {getMandatoryProjects().map((module, i) => (
+              <Module
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${module.title}-${i}`}
+                currIndex={i}
+                data={module}
+                taskTodo={taskTodo}
+                variant="open-only"
+              />
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
