@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { subMinutes } from 'date-fns';
 import { memo, useState } from 'react';
 import ProgramCard from '../../common/components/ProgramCard';

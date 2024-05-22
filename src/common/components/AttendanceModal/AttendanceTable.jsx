@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
   TableContainer, Table, Thead, Tr, Th, Tbody, Td,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Icon from '../Icon';
 
 function AttendanceTable({ attendanceTaken }) {

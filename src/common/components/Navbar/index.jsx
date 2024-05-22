@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Box, Flex, IconButton, Avatar, Stack, Collapse, useColorModeValue,
   useDisclosure, useColorMode, Popover, PopoverTrigger,
@@ -9,7 +11,7 @@ import {
 } from 'react';
 import Image from 'next/image';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
 import { formatDistanceStrict } from 'date-fns';
@@ -37,7 +39,7 @@ import bc from '../../services/breathecode';
 
 const BREATHECODE_HOST = modifyEnv({ queryString: 'host', env: process.env.BREATHECODE_HOST });
 
-function NavbarWithSubNavigation({ translations, pageProps }) {
+function NavbarWithSubNavigation({ lang: langI18n, translations, pageProps }) {
   const HAVE_SESSION = typeof window !== 'undefined' ? localStorage.getItem('accessToken') !== null : false;
 
   const [haveSession, setHaveSession] = useState(HAVE_SESSION);
@@ -57,7 +59,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
 
   const disableLangSwitcher = pageProps?.disableLangSwitcher || false;
   const langs = ['en', 'es'];
-  const locale = router.locale === 'default' ? 'en' : router.locale;
+  const locale = langI18n === 'default' ? 'en' : langI18n;
 
   const query = isWindow && new URLSearchParams(window.location.search || '');
   const queryToken = isWindow && query.get('token')?.split('?')[0];
@@ -68,6 +70,8 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
     featured: true,
     academy: WHITE_LABEL_ACADEMY,
   });
+  console.log('navbarTR[locale]:::', navbarTR[locale]);
+  console.log('langI18n:::', langI18n);
 
   const {
     languagesTR,
@@ -544,6 +548,7 @@ function NavbarWithSubNavigation({ translations, pageProps }) {
 NavbarWithSubNavigation.propTypes = {
   translations: PropTypes.oneOfType([PropTypes.objectOf(PropTypes.any), PropTypes.arrayOf(PropTypes.any)]),
   pageProps: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array, PropTypes.bool])),
+  lang: PropTypes.string.isRequired,
 };
 NavbarWithSubNavigation.defaultProps = {
   translations: undefined,

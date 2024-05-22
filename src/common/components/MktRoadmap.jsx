@@ -2,7 +2,7 @@ import {
   Box, Image, ListItem, TabList, Tabs, UnorderedList,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from '../../axios';
 import Icon from './Icon';

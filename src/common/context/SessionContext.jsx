@@ -1,6 +1,8 @@
+'use client';
+
 /* eslint-disable camelcase */
 import React, { createContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { isWindow, getQueryString } from '../../utils';
 

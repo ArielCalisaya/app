@@ -8,7 +8,7 @@ import {
   Flex,
   useToast,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import bc from '../services/breathecode';
 import DottedTimeline from '../components/DottedTimeline';
 import NextChakraLink from '../components/NextChakraLink';

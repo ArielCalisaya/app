@@ -12,7 +12,7 @@ import useTranslation from 'next-translate/useTranslation';
 import AnchorJS from 'anchor-js';
 import bc from '../../services/breathecode';
 
-// import { useRouter } from 'next/router';
+// import { useRouter } from 'next/navigation';
 import {
   Wrapper, BeforeAfter, Code, MDCheckbox, MDHeading, MDHr, MDLink, MDText, OnlyForBanner, Quote,
 } from './MDComponents';

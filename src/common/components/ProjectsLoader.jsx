@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import React, { useState, useCallback, useEffect } from 'react';
 import ProjectList from '../../js_modules/projects/ProjectList';

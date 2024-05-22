@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Avatar, AvatarGroup, Box, Button, Image, Input, InputGroup, InputRightElement, useColorModeValue, useToast } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import useStyle from '../../hooks/useStyle';

@@ -9,7 +9,7 @@ import { Avatar, Box, Button, Checkbox, useToast,
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import NextChakraLink from '../NextChakraLink';
 import FieldForm from './FieldForm';
 import { email as emailRe } from '../../../utils/regex';

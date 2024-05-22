@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Box, Flex, LinkBox } from '@chakra-ui/react';
 import { PrismicRichText } from '@prismicio/react';
 import ShowPrices from './ShowPrices';

@@ -1,6 +1,6 @@
 import { Box, Flex, Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import Icon from '../../../common/components/Icon';
 import ShowPrices from '../../../common/components/ShowPrices';

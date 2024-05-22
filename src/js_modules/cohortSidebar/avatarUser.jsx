@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
 import Heading from '../../common/components/Heading';

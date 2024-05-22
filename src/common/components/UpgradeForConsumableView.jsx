@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Button, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useTranslation from 'next-translate/useTranslation';
 import Text from './Text';
 import useStyle from '../hooks/useStyle';

@@ -1,7 +1,7 @@
 /* eslint-disable no-unsafe-optional-chaining */
 import { useToast } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import useStyle from '../../../common/hooks/useStyle';
 import bc from '../../../common/services/breathecode';

@@ -3,7 +3,7 @@ import {
   Box, Container, Text, useColorModeValue, useMediaQuery,
 } from '@chakra-ui/react';
 import Plx from 'react-plx';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { AnimatedAvatar, AnimatedButton, ShadowCard } from '../../common/components/Animated';

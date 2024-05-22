@@ -4,7 +4,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Link from '../components/NextChakraLink';
 import { usePersistent } from '../hooks/usePersistent';
 import useStyle from '../hooks/useStyle';

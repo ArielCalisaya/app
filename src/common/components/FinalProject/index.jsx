@@ -2,7 +2,7 @@
 import { Box, Button, Link, Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useTranslation from 'next-translate/useTranslation';
 import { usePersistent } from '../../hooks/usePersistent';
 import Heading from '../Heading';

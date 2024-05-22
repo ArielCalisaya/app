@@ -4,7 +4,7 @@ import {
   Box, Flex,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Heading from './Heading';
 import Text from './Text';

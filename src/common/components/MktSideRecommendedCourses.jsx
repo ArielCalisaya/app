@@ -2,7 +2,7 @@ import { Box, Image, Link, useColorModeValue } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Heading from './Heading';
 import Text from './Text';
 import Icon from './Icon';

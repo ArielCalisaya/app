@@ -2,7 +2,7 @@ import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOve
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import useStyle from '../hooks/useStyle';

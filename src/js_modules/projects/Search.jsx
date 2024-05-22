@@ -7,7 +7,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { Formik, Form, Field } from 'formik';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Icon from '../../common/components/Icon';

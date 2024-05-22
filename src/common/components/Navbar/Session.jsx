@@ -12,7 +12,7 @@ import {
   useColorMode,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import NextChakraLink from '../NextChakraLink';
 import Icon from '../Icon';
 

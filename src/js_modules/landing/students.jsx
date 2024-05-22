@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import {
   Avatar, Box, Text, useColorModeValue, useMediaQuery,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Plx from 'react-plx';
 import { AnimatedButton, MotionBox } from '../../common/components/Animated';
 import Heading from '../../common/components/Heading';

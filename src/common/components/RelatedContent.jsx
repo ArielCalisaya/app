@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { es, enUS } from 'date-fns/locale';
 import { format } from 'date-fns';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { getAsset } from '../../utils/requests';
 import useStyle from '../hooks/useStyle';
 import Heading from './Heading';

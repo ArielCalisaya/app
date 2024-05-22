@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Box, Heading, Button, useColorMode, useColorModeValue,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';

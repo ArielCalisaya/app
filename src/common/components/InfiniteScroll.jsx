@@ -1,5 +1,5 @@
 import { Box, Link } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import React, { useRef, useCallback, useEffect } from 'react';
 import { isWindow } from '../../utils';

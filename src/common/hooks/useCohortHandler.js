@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useToast } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { devLog, getStorageItem } from '../../utils';
 // import { useState, useEffect } from 'react';

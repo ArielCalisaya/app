@@ -15,7 +15,7 @@ import {
   ModalCloseButton,
   Switch,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Icon from '../Icon';
 import Text from '../Text';
 import { isWindow } from '../../../utils';

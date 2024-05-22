@@ -8,7 +8,7 @@ import { Field, Form, Formik } from 'formik';
 // import Icon from '../../common/components/Icon';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import validationSchemas from './Forms/validationSchemas';
 import { getStorageItem, objectAreNotEqual } from '../../utils';
 import bc from '../services/breathecode';

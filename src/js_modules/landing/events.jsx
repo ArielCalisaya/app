@@ -3,7 +3,7 @@ import {
   Avatar,
   Box, Container, Text, useColorModeValue,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { AnimatedButton } from '../../common/components/Animated';
 import Heading from '../../common/components/Heading';
 import Icon from '../../common/components/Icon';

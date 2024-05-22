@@ -3,7 +3,7 @@ import { Box, Button, Flex, useToast } from '@chakra-ui/react';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import Text from '../../common/components/Text';

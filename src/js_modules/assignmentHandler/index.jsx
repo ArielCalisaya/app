@@ -3,7 +3,7 @@ import {
   Box, Button, FormLabel, Input, Link, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useToast, useColorModeValue, useDisclosure,
 } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 // import { Formik, Form, Field } from 'formik';
 import PropTypes from 'prop-types';
 import {

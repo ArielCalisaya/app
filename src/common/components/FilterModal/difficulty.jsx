@@ -3,7 +3,7 @@ import {
   Box, Flex, Tooltip,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Text from '../Text';
 import Icon from '../Icon';

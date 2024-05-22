@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Box } from '@chakra-ui/react';
 import ProjectList from '../../../js_modules/projects/ProjectList';
 import PageIndexes from './PageIndexes';

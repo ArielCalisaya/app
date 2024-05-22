@@ -3,7 +3,7 @@
 // import { Link as ChakraLink } from '@chakra-ui/react';
 import { Link } from '@chakra-ui/next-js';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { setStorageItem } from '../../utils';
 
 function NextChakraLink({

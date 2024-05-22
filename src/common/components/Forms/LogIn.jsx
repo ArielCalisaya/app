@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { Form, Formik, Field } from 'formik';
 import { reportDatalayer } from '../../../utils/requests';
-// import { useRouter } from 'next/router';
+// import { useRouter } from 'next/navigation';
 import Icon from '../Icon/index';
 import validationSchema from './validationSchemas';
 import useAuth from '../../hooks/useAuth';

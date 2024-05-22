@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { isWindow, removeURLParameter, setStorageItem } from '../../utils';
 import { log } from '../../utils/logging';
 import useAuth from '../hooks/useAuth';

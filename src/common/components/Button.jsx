@@ -1,6 +1,6 @@
 import { Button as ChakraButton } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 function Button({ to, onClick, children, ...rest }) {

@@ -4,7 +4,7 @@ import {
 } from '@chakra-ui/react';
 import { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Text from './Text';
 import useStyle from '../hooks/useStyle';
 import Heading from './Heading';

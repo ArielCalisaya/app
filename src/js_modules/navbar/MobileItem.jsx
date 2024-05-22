@@ -13,7 +13,7 @@ import {
   AccordionPanel,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-// import { useRouter } from 'next/router';
+// import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import NextChakraLink from '../../common/components/NextChakraLink';
 import Icon from '../../common/components/Icon';

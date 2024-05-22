@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, useColorModeValue, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import Text from './Text';
 import Signup from './Forms/Signup';

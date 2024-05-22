@@ -13,7 +13,7 @@ import {
   // InputRightElement,
 } from '@chakra-ui/react';
 import { Form, Formik, Field } from 'formik';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 // import Icon from '../Icon';
 import { useState } from 'react';
 import PropTypes from 'prop-types';

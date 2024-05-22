@@ -4,7 +4,7 @@ import {
   Box, Button,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useTranslation from 'next-translate/useTranslation';
 import Heading from './Heading';
 import Text from './Text';

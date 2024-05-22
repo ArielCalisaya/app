@@ -12,7 +12,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';

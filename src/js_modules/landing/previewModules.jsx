@@ -3,7 +3,7 @@ import {
   Box, TabList, TabPanel, TabPanels, Tabs, useColorModeValue, Text, Button,
 } from '@chakra-ui/react';
 import { useState, createRef } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { AnimatedButton, CustomTab } from '../../common/components/Animated';
 import Icon from '../../common/components/Icon';
 import Heading from '../../common/components/Heading';

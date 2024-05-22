@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Box, ListItem, UnorderedList, useToast, Button, Image } from '@chakra-ui/react';
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import SimpleModal from '../components/SimpleModal';
 import useSignup from '../store/actions/signupAction';
 import axiosInstance from '../../axios';

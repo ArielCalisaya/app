@@ -9,7 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useTranslation from 'next-translate/useTranslation';
 import bc from '../../services/breathecode';
 import MentoringFree from './MentoringFree';
