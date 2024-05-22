@@ -135,17 +135,27 @@ module.exports = removeImports(nextTranslate(withBundleAnalyzer({
   },
   images: {
     // Whitelist for image providers
-    domains: [
-      'assets.vercel.com',
-      'github.com',
-      'raw.githubusercontent.com',
-      'breathecode.herokuapp.com',
-      'avatars.githubusercontent.com',
-      'storage.googleapis.com',
-      'images.prismic.io',
-      'images.unsplash.com',
-      'refreshmiami.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Esto permite cualquier dominio
+        port: '',
+        pathname: '**', // Esto permite cualquier ruta
+      },
     ],
+
+    // Deprecated
+    // domains: [
+    //   'assets.vercel.com',
+    //   'github.com',
+    //   'raw.githubusercontent.com',
+    //   'breathecode.herokuapp.com',
+    //   'avatars.githubusercontent.com',
+    //   'storage.googleapis.com',
+    //   'images.prismic.io',
+    //   'images.unsplash.com',
+    //   'refreshmiami.com',
+    // ],
     // formats: ['image/avif', 'image/webp'],
   },
   env: {

@@ -1,7 +1,7 @@
 import {
-  Flex, Stack, Box, Image,
+  Flex, Stack, Box,
 } from '@chakra-ui/react';
-// import I from 'next/image';
+import Image from 'next/image';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 // import logo from '../../../public/static/images/bc_logo.png';
@@ -90,9 +90,14 @@ function LoginView({ existsWhiteLabel }) {
       >
         {/* <Box width="100%"> */}
         <Image
-          height="100%"
-          width="100%"
+          height={840}
+          width={625}
           objectFit="cover"
+          style={{
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+          }}
           src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
         />
         {/* </Box> */}
